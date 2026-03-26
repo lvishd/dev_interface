@@ -2,24 +2,124 @@ import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.mi
 import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs";
 
 function cleanId(mermaidId) {
-    return mermaidId.replace(/^flowchart-/, '').replace(/-[0-9]+$/, '');
+    return mermaidId.replace(/^flowchart-/, "").replace(/-[0-9]+$/, "");
 }
 
-mermaid.registerLayoutLoaders(elkLayouts);
+async function renderDiagram() {
+    error.textContent = "";
+    preview.removeAttribute("data-processed");
+    preview.innerHTML = "";
+    preview.textContent = source.value;
 
-mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose",
-    theme: "default"
-});
+    try {
+        await mermaid.run({ nodes: [preview] });
 
-const source = document.getElementById("source");
-const preview = document.getElementById("preview");
-const error = document.getElementById("error");
-const btn = document.getElementById("renderBtn");
+        const svgElement = document.querySelector("#preview svg");
 
-// ?? Default diagram content
-source.value = `---
+        if (svgElement) {
+            const interactives = svgElement.querySelectorAll(".cluster");
+
+            interactives.forEach((el) => {
+                el.addEventListener("click", function (e) {
+                    e.stopPropagation();
+
+                    const rawId = el.getAttribute("id");
+                    if (rawId) {
+                        alert("Elément cliqué (ID) : " + cleanId(rawId));
+                    }
+                });
+            });
+
+            svgPanZoom(svgElement, {
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true,
+            });
+        }
+    } catch (e) {
+        error.textContent = e?.message || String(e);
+        console.error(e);
+    }
+}
+
+function jsonToMermaid(data) {
+    let mermaid = "graph TD\n";
+
+    // --- QUESTIONS ---
+    mermaid += "    %% questions\n";
+    data.questions
+        .sort((a, b) => a.order - b.order)
+        .forEach((q) => {
+            const answers = q.resValues.map((v) => v[0]).join("/");
+            mermaid += `    ${q.id}["${q.questionNb} : ${q.title}<br/> ${q.body} <br/>(${answers})"]\n`;
+        });
+
+    // --- NODES ---
+    mermaid += "\n    %% nodes\n";
+
+    data.nodes.forEach((node) => {
+        if (node.type === "initial") {
+            mermaid += `    ${node.id}((${node.label}))\n`;
+        } else if (node.type === "final") {
+            mermaid += `    ${node.id}[${node.label}]\n`;
+        } else if (node.type === "etat") {
+            mermaid += `\n    subgraph ${node.id}\n`;
+            mermaid += `        direction LR\n`;
+
+            if (node.questions && node.questions.length > 0) {
+                mermaid += "        " + node.questions.join("~~~~") + "\n";
+            }
+
+            mermaid += "    end\n";
+        }
+    });
+
+    // --- TRANSITIONS ---
+    mermaid += "\n    %% transitions\n";
+
+    data.transitions
+        .sort((a, b) => a.order - b.order)
+        .forEach((t) => {
+            let label = "";
+
+            if (t.condition) {
+                label = ` -- "${t.order}/<br/> ${t.condition}" --> `;
+            } else {
+                label = " --> ";
+            }
+
+            mermaid += `    ${t.source}${label}${t.target}\n`;
+        });
+
+    // --- CLASSES ---
+    mermaid += "\n    %% appartenance aux classes\n";
+
+    data.nodes.forEach((node) => {
+        if (node.type === "final") {
+            mermaid += `    class ${node.id} final\n`;
+        }
+    });
+
+    return mermaid;
+}
+
+$(document).ready(function () {
+    mermaid.registerLayoutLoaders(elkLayouts);
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        theme: "default",
+    });
+
+    const source = document.getElementById("source");
+    const preview = document.getElementById("preview");
+    const error = document.getElementById("error");
+    const btn = document.getElementById("renderBtn");
+
+    // ?? Default diagram content
+    source.value = `---
 config:
     layout: elk
 ---
@@ -135,44 +235,6 @@ graph TD
       class Check decision
 `;
 
-async function renderDiagram() {
-    error.textContent = "";
-    preview.removeAttribute("data-processed");
-    preview.innerHTML = "";
-    preview.textContent = source.value;
-
-    try {
-        await mermaid.run({ nodes: [preview] });
-
-        const svgElement = document.querySelector('#preview svg');
-
-        if (svgElement) {
-            const interactives = svgElement.querySelectorAll('.node, .cluster');
-
-            interactives.forEach(el => {
-                el.addEventListener('click', function (e) {
-                    e.stopPropagation();
-
-                    const rawId = el.getAttribute('id');
-                    if (rawId) {
-                        alert("Elément cliqué (ID) : " + cleanId(rawId));
-                    }
-                });
-            });
-
-            svgPanZoom(svgElement, {
-                zoomEnabled: true,
-                controlIconsEnabled: true,
-                fit: true,
-                center: true
-            });
-        }
-
-    } catch (e) {
-        error.textContent = e?.message || String(e);
-        console.error(e);
-    }
-}
-
-btn.addEventListener("click", renderDiagram);
-renderDiagram();
+    btn.addEventListener("click", renderDiagram);
+    renderDiagram();
+});

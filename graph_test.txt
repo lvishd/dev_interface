@@ -4,7 +4,6 @@ graph TD
     Q2["Q2 : Double nationalité<br/> Avez-vous une double nationalité ? <br/>(O/N)"]
     Q3["Q3 : Situation particulière<br/> Etes-vous dans une situation particulière ? <br/>(O/N)"]
 
-
     %% nodes
     start((DEBUT))
 
@@ -12,17 +11,13 @@ graph TD
         direction LR
         Q1~~~~Q2~~~~Q3
     end
-
     DN[PROFIL_DN]
-    
     NO[PROFIL_NO]
-
 
     %% transitions
     start --> DGM-LSO1
     DGM-LSO1 -- "1/ Q1=1" --> NO
     DGM-LSO1 -- "2/ Q3=0" --> DN
-
 
     %% appartenance aux classes
     class NO final
