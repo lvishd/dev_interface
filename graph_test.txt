@@ -5,7 +5,7 @@ graph TD
     Q3["Q3 : Situation particulière<br/> Etes-vous dans une situation particulière ? <br/>(O/N)"]
 
 
-    %% blocks
+    %% nodes
     start((DEBUT))
 
     subgraph DGM-LSO1
