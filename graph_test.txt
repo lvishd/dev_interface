@@ -1,12 +1,12 @@
 graph TD
     %% questions
-    Q1["Q1 : Boursier<br/> Êtes-vous boursier ? <br/>(O/N)"]
-    Q2["Q2 : Double nationalité<br/> Avez-vous une double nationalité ? <br/>(O/N)"]
-    Q3["Q3 : Situation particulière<br/> Êtes-vous dans une situation particulière ? <br/>(O/N)"]
+    Q1["Q1 : Boursier<br/> Etes-vous boursier ? <br/>(O/N)"]
+    Q2["Q2 : Double nationalitÃ©<br/> Avez-vous une double nationalitÃ© ? <br/>(O/N)"]
+    Q3["Q3 : Situation particuliÃ¨re<br/> Etes-vous dans une situation particuliÃ¨re ? <br/>(O/N)"]
 
 
     %% blocks
-    start((DÉBUT))
+    start((DEBUT))
 
     subgraph DGM-LSO1
         direction LR
