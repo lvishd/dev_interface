@@ -49,7 +49,7 @@ async function renderDiagram() {
 
                         initModalConditions(rawId);
 
-                        $("#modal-manage-node").removeClass("hidden");
+                        showModal("#modal-manage-node");
                     }
                 });
             });
@@ -222,6 +222,14 @@ function saveNode(nodeId) {
     buildTransitions(nodeId);
 }
 
+function showModal(id) {
+    $(id).removeClass("hidden");
+}
+
+function hideModal(id) {
+    $(id).addClass("hidden");
+}
+
 $(document).ready(function () {
     mermaid.registerLayoutLoaders(elkLayouts);
 
@@ -243,13 +251,13 @@ $(document).ready(function () {
     });
 
     $("#add-node-btn").on("click", function () {
-        $("#modal-add-node").removeClass("hidden");
+        showModal("#modal-add-node");
         $("#nodeId").val("");
         $('input[name="type"][value="etape"]').prop("checked", true);
     });
 
     $("#modal-add-node #cancelBtn").on("click", function () {
-        $("#modal-add-node").addClass("hidden");
+        hideModal("#modal-add-node");
     });
 
     $("#modal-add-node #createBtn").on("click", function () {
@@ -276,25 +284,25 @@ $(document).ready(function () {
         addNode(newNode);
         renderDiagram();
 
-        $("#modal-add-node").addClass("hidden");
+        hideModal("#modal-add-node");
     });
 
     $("#modal-manage-node #cancelBtn").on("click", function () {
-        $("#modal-manage-node").addClass("hidden");
+        hideModal("#modal-manage-node");
     });
 
     $("#modal-manage-node #saveBtn").on("click", function () {
         const nodeId = $("#modal-manage-node #node-id").text();
         saveNode(nodeId);
         renderDiagram();
-        $("#modal-manage-node").addClass("hidden");
+        hideModal("#modal-manage-node");
     });
 
     $("#modal-manage-node #deleteBtn").on("click", function () {
         const nodeId = $("#modal-manage-node #node-id").text();
         deleteNode(nodeId);
         renderDiagram();
-        $("#modal-manage-node").addClass("hidden");
+        hideModal("#modal-manage-node");
     });
 
     new Sortable($("#modal-manage-node #container-questions")[0], {
@@ -326,7 +334,7 @@ $(document).ready(function () {
         const currentText = currentConditionSpan.text().trim();
         $("#modal-modify-condition input").val(currentText);
 
-        $("#modal-modify-condition").removeClass("hidden");
+        showModal("#modal-modify-condition");
     });
 
     $("#modal-modify-condition #saveBtn").on("click", function () {
@@ -337,11 +345,11 @@ $(document).ready(function () {
             currentConditionSpan = null;
         }
 
-        $("#modal-modify-condition").addClass("hidden");
+        hideModal("#modal-modify-condition");
     });
 
     $("#modal-modify-condition #cancelBtn").on("click", function () {
-        $("#modal-modify-condition").addClass("hidden");
+        hideModal("#modal-modify-condition");
     });
 
     $("#modal-manage-node #add-condition-btn").on("click", function () {
