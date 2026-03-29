@@ -39,7 +39,7 @@
         {
             "id": "DGM-LSO1",
             "label": "",
-            "type": "etat",
+            "type": "etape",
             "questions": ["Q1", "Q2", "Q3"]
         },
         {
