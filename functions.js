@@ -1,20 +1,18 @@
 import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
 import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs";
 
-
-
 function resetGraph() {
     graphJSON = {
-        "questions": [],
-        "nodes": [
+        questions: [],
+        nodes: [
             {
-                "id": "debut",
-                "label": "DEBUT",
-                "type": "initial",
-                "questions": []
-            }
+                id: "debut",
+                label: "DEBUT",
+                type: "initial",
+                questions: [],
+            },
         ],
-        "transitions": []
+        transitions: [],
     };
     renderDiagram();
 }
@@ -49,10 +47,7 @@ async function renderDiagram() {
                     if (rawId) {
                         $("#modal-manage-node #node-id").html(rawId);
 
-
-                        
-                        initNodesSelect();
-
+                        initModalConditions(rawId);
 
                         $("#modal-manage-node").removeClass("hidden");
                     }
@@ -133,23 +128,12 @@ function jsonToMermaid(data) {
     return mermaid;
 }
 
-function createNodeJSON(id, type) {
-    const node = {
-        "id": id,
-        "label": "",
-        "type": type,
-        "questions": ["initialiser"]
-    }
-    return node;
-}
-
 function addNode(node) {
     graphJSON.nodes.push(node);
-    console.log(graphJSON);
 }
 
-function createConditionRow() {
-    return $(`
+function createConditionRow(nodeIdsList = []) {
+    const $row = $(`
         <div class="list-row div-condition">
             <span class="condition-str"></span>
             <select class="select-available-nodes"></select>
@@ -157,37 +141,86 @@ function createConditionRow() {
             <button class="delete-condition">X</button>
         </div>
     `);
+
+    const $select = $row.find(".select-available-nodes");
+
+    nodeIdsList.forEach((id) => {
+        $select.append(
+            $("<option>", {
+                value: id,
+                text: id,
+            }),
+        );
+    });
+
+    return $row;
 }
 
 function addConditionRow(elem) {
     $("#container-conditions").append(elem);
 }
 
-function getNodeIdsList() {
-    return graphJSON.nodes.map(node => node.id);
-}
-
-function initNodesSelect() {
+function initModalConditions(nodeId) {
     const nodesIdsList = getNodeIdsList();
 
-    $('.select-available-nodes').each(function () {
-        const $select = $(this);
+    $("#modal-manage-node #container-conditions").empty();
 
-        // Clear existing options
-        $select.empty();
+    graphJSON.transitions.forEach((transition) => {
+        if (transition.source === nodeId) {
+            const $row = createConditionRow(nodesIdsList);
 
-        // Add new options
-        nodesIdsList.forEach(id => {
-            $select.append(
-                $('<option>', {
-                    value: id,
-                    text: id
-                })
-            );
-        });
+            const $select = $row.find(".select-available-nodes");
+            $select.val(transition.target);
+
+            addConditionRow($row);
+        }
     });
 }
 
+function getNodeIdsList() {
+    return graphJSON.nodes.map((node) => node.id);
+}
+
+function buildTransitions(nodeId) {
+    $(".div-condition").each(function (index) {
+        const $div = $(this);
+
+        const conditionText = $div.find(".condition-str").text().trim();
+        const selectedTarget = $div.find(".select-available-nodes").val();
+
+        const transition = {
+            source: nodeId,
+            target: selectedTarget,
+            condition: conditionText,
+            order: index + 1,
+        };
+
+        graphJSON.transitions.push(transition);
+    });
+}
+
+function deleteTransitions(source2delete) {
+    graphJSON.transitions = graphJSON.transitions.filter((t) => t.source !== source2delete);
+}
+
+function deleteNode(node2delete) {
+    graphJSON.nodes = graphJSON.nodes.filter((node) => {
+        return node.id !== node2delete;
+    });
+
+    graphJSON.transitions = graphJSON.transitions.filter((transition) => {
+        return transition.source !== node2delete && transition.target !== node2delete;
+    });
+}
+
+function saveNode(nodeId) {
+    // questions
+
+    // transitions
+    // les transitions du node sont maj de zéro
+    deleteTransitions(nodeId);
+    buildTransitions(nodeId);
+}
 
 $(document).ready(function () {
     mermaid.registerLayoutLoaders(elkLayouts);
@@ -205,14 +238,13 @@ $(document).ready(function () {
 
     renderDiagram();
 
-
     $("#reset-graph").on("click", function () {
         resetGraph();
     });
 
     $("#add-node-btn").on("click", function () {
         $("#modal-add-node").removeClass("hidden");
-        $("#nodeId").val("")
+        $("#nodeId").val("");
         $('input[name="type"][value="etape"]').prop("checked", true);
     });
 
@@ -224,13 +256,12 @@ $(document).ready(function () {
         const id = $("#nodeId").val().trim();
         const type = $('input[name="type"]:checked').val();
 
-
         if (!id) {
             alert("ID requis");
             return;
         }
 
-        let questions = []
+        let questions = [];
         if (type === "etape") {
             questions = [`initialiser_${id}`];
         }
@@ -239,7 +270,7 @@ $(document).ready(function () {
             id: id,
             label: "",
             type: type,
-            questions: questions
+            questions: questions,
         };
 
         addNode(newNode);
@@ -252,13 +283,27 @@ $(document).ready(function () {
         $("#modal-manage-node").addClass("hidden");
     });
 
+    $("#modal-manage-node #saveBtn").on("click", function () {
+        const nodeId = $("#modal-manage-node #node-id").text();
+        saveNode(nodeId);
+        renderDiagram();
+        $("#modal-manage-node").addClass("hidden");
+    });
+
+    $("#modal-manage-node #deleteBtn").on("click", function () {
+        const nodeId = $("#modal-manage-node #node-id").text();
+        deleteNode(nodeId);
+        renderDiagram();
+        $("#modal-manage-node").addClass("hidden");
+    });
+
     new Sortable($("#modal-manage-node #container-questions")[0], {
         animation: 150,
         ghostClass: "sortable-ghost",
 
         onEnd: function () {
-            // 
-        }
+            //
+        },
     });
 
     new Sortable($("#modal-manage-node #container-conditions")[0], {
@@ -266,8 +311,8 @@ $(document).ready(function () {
         ghostClass: "sortable-ghost",
 
         onEnd: function () {
-            // 
-        }
+            //
+        },
     });
 
     $(document).on("click", ".div-condition .delete-condition", function () {
@@ -295,16 +340,13 @@ $(document).ready(function () {
         $("#modal-modify-condition").addClass("hidden");
     });
 
-
     $("#modal-modify-condition #cancelBtn").on("click", function () {
         $("#modal-modify-condition").addClass("hidden");
     });
 
-
     $("#modal-manage-node #add-condition-btn").on("click", function () {
-        const conditionRow = createConditionRow();
+        const nodeIdsList = getNodeIdsList();
+        const conditionRow = createConditionRow(nodeIdsList);
         addConditionRow(conditionRow);
-        initNodesSelect();
     });
-
 });
