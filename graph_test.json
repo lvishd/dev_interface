@@ -31,7 +31,7 @@
 
     "nodes": [
         {
-            "id": "start",
+            "id": "debut",
             "label": "DEBUT",
             "type": "initial",
             "questions": []
@@ -58,7 +58,7 @@
 
     "transitions": [
         {
-            "source": "start",
+            "source": "debut",
             "target": "DGM-LSO1",
             "condition": "",
             "order": 0

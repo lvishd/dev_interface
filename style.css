@@ -65,6 +65,99 @@ button {
     stroke-width: 2px;
 }
 
-#add-block-btn {
+#add-node-btn {
     width: fit-content;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 300px;
+}
+
+#modal-manage-node .modal-content {
+    min-width: 500px;
+    height: fit-content;
+    max-height: 60vh;
+}
+
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#modal-manage-node #main-container {
+    height: 100%;
+    width: 100%;
+    background-color: rgb(255, 198, 198);
+    display: flex;
+    justify-content: space-around;
+
+}
+
+#modal-manage-node #box-questions,
+#modal-manage-node #box-conditions {
+    height: 100%;
+    width: fit-content;
+    border: solid blue 1px;
+}
+
+#modal-manage-node #box-questions {}
+
+#modal-manage-node #box-conditions {}
+
+#modal-manage-node #container-questions,
+#modal-manage-node #container-conditions {
+    height: fit-content;
+    width: 100%;
+    border: solid black 1px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.list-row {
+    padding: 7px;
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+
+.list-row:active {
+    cursor: grabbing;
+}
+
+.title-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.div-condition {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#modal-manage-node .condition-str{
+    min-width: 100px;
 }
