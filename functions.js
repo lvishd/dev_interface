@@ -43,10 +43,13 @@ async function renderDiagram() {
                 el.addEventListener("click", function (e) {
                     e.stopPropagation();
                     let id;
+                    $("#modal-manage-node #box-questions").show();
                     if (el.classList.contains("node")) {
                         id = el.querySelector(".nodeLabel p")?.textContent.trim();
                         if (id !== "DEBUT") {
                             id = id.replace("initialiser_", "");
+                        } else {
+                            $("#modal-manage-node #box-questions").hide();
                         }
                     } else if (el.classList.contains("cluster")) {
                         id = el.getAttribute("id");
