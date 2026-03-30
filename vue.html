@@ -58,8 +58,6 @@
             </div>
         </div>
 
-        
-
         <div id="modal-manage-node" class="modal hidden">
             <div class="modal-content">
                 <h3>Etape <span id="node-id">X</span></h3>
@@ -68,11 +66,17 @@
                     <div id="box-questions">
                         <div class="title-header">
                             <span>Questions</span>
-                            <button>+</button>
+                            <button id="add-question-btn">+</button>
                         </div>
                         <div id="container-questions">
-                            <div class="list-row">Q1: Boursier ?</div>
-                            <div class="list-row">Q2: Double Nationalité</div>
+                            <div class="list-row div-question">
+                                <span class="question-str">Q1: Boursier ?</span>
+                                <button class="delete-question">X</button>
+                            </div>
+                            <div class="list-row div-question">
+                                <span class="question-str">Q2: Double Nationalité</span>
+                                <button class="delete-question">X</button>
+                            </div>
                         </div>
                     </div>
                     <div id="box-conditions">
@@ -118,6 +122,21 @@
                 <div class="buttons">
                     <button id="saveBtn">Enregistrer</button>
                     <button id="deleteBtn">Supprimer</button>
+                    <button id="cancelBtn">Annuler</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-add-question" class="modal hidden">
+            <div class="modal-content">
+                <h3>Questions</h3>
+
+                <div id="questions-disponibles">
+                    <button>Q1: Boursier ?</button>
+                    <button>Q2: Double Nationalité</button>
+                </div>
+
+                <div class="buttons">
                     <button id="cancelBtn">Annuler</button>
                 </div>
             </div>

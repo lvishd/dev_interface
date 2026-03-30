@@ -53,6 +53,7 @@ async function renderDiagram() {
                     }
                     if (id) {
                         $("#modal-manage-node #node-id").html(id);
+                        initModalQuestions(id);
                         initModalConditions(id);
                         showModal("#modal-manage-node");
                     }
@@ -161,8 +162,23 @@ function createConditionRow(nodeIdsList = []) {
     return $row;
 }
 
+function createQuestionRow(question) {
+    const $row = $(`
+        <div class="list-row div-question" data-question-id="${question.id}">
+            <span class="question-str">${question.title}</span>
+            <button class="delete-question">X</button>
+        </div>
+    `);
+
+    return $row;
+}
+
 function addConditionRow(elem) {
     $("#container-conditions").append(elem);
+}
+
+function addQuestionRow(elem) {
+    $("#container-questions").append(elem);
 }
 
 function initModalConditions(nodeId) {
@@ -182,12 +198,29 @@ function initModalConditions(nodeId) {
     });
 }
 
+function initModalQuestions(nodeId) {
+    $("#modal-manage-node #container-questions").empty();
+
+    const node = graphJSON.nodes.find(n => n.id === nodeId);
+    const questionsIds = node.questions ?? [];
+
+    questionsIds.forEach((questionId) => {
+        const question = questionsBouchon.find(q => q.id === questionId) ?? null;
+        if (question == null) {
+            return true;
+        }
+        const $row = createQuestionRow(question);
+
+        addQuestionRow($row);
+    });
+}
+
 function getNodeIdsList() {
     return graphJSON.nodes.map((node) => node.id);
 }
 
-function buildTransitions(nodeId) {
-    $(".div-condition").each(function (index) {
+function buildTransitionsJSON(nodeId) {
+    $("#modal-manage-node .div-condition").each(function (index) {
         const $div = $(this);
 
         const conditionText = $div.find(".condition-str").text().trim();
@@ -202,6 +235,45 @@ function buildTransitions(nodeId) {
 
         graphJSON.transitions.push(transition);
     });
+}
+
+function buildQuestionsJSON(nodeId) {
+    const node = graphJSON.nodes.find(n => n.id === nodeId);
+
+    const $questions = $("#modal-manage-node .div-question");
+    if ($questions.length == 0) {
+        node.questions = [`initialiser_${nodeId}`];
+    } else {
+        $questions.each(function () {
+            const $div = $(this);
+
+            const questionId = $div.data("question-id");
+            node.questions.push(questionId);
+
+            const question = questionsBouchon.find(q => q.id === questionId);
+
+            if (!graphJSON.questions.some(q => q.id === question.id)) {
+                // push only if not exists in graphJSON.questions
+                graphJSON.questions.push(question);
+            }
+        });
+    }
+}
+
+function deleteQuestions(nodeId) {
+    const node = graphJSON.nodes.find(n => n.id === nodeId);
+    node.questions = [];
+}
+
+function deleteUnusedQuestionsJSON() {
+    // keep only the questions that are actually referenced in at least one node
+    const usedQuestionIds = new Set(
+        graphJSON.nodes.flatMap(node => node.questions)
+    );
+
+    graphJSON.questions = graphJSON.questions.filter(q =>
+        usedQuestionIds.has(q.id)
+    );
 }
 
 function deleteTransitions(source2delete) {
@@ -220,11 +292,15 @@ function deleteNode(node2delete) {
 
 function saveNode(nodeId) {
     // questions
+    // les questions du node sont maj de zéro
+    deleteQuestions(nodeId);
+    buildQuestionsJSON(nodeId);
+    deleteUnusedQuestionsJSON();
 
     // transitions
     // les transitions du node sont maj de zéro
     deleteTransitions(nodeId);
-    buildTransitions(nodeId);
+    buildTransitionsJSON(nodeId);
 }
 
 function showModal(id) {
@@ -233,6 +309,20 @@ function showModal(id) {
 
 function hideModal(id) {
     $(id).addClass("hidden");
+}
+
+function initModalQuestionsDisponibles() {
+    $("#questions-disponibles").empty();
+    questionsBouchon.forEach(question => {
+        const $button = $("<button>", {
+            text: `${question.id} : ${question.title}`
+        }).on("click", function () {
+            const questionRow = createQuestionRow(question);
+            addQuestionRow(questionRow);
+            hideModal("#modal-add-question");
+        });
+        $("#questions-disponibles").append($button);
+    });
 }
 
 $(document).ready(function () {
@@ -306,6 +396,7 @@ $(document).ready(function () {
     $("#modal-manage-node #deleteBtn").on("click", function () {
         const nodeId = $("#modal-manage-node #node-id").text();
         deleteNode(nodeId);
+        deleteUnusedQuestionsJSON();
         renderDiagram();
         hideModal("#modal-manage-node");
     });
@@ -331,6 +422,11 @@ $(document).ready(function () {
     $(document).on("click", ".div-condition .delete-condition", function () {
         let $button = $(this);
         $button.closest(".div-condition").remove();
+    });
+
+    $(document).on("click", ".div-question .delete-question", function () {
+        let $button = $(this);
+        $button.closest(".div-question").remove();
     });
 
     $(document).on("click", ".div-condition .modify-condition", function () {
@@ -361,5 +457,14 @@ $(document).ready(function () {
         const nodeIdsList = getNodeIdsList();
         const conditionRow = createConditionRow(nodeIdsList);
         addConditionRow(conditionRow);
+    });
+
+    $("#modal-manage-node #add-question-btn").on("click", function () {
+        initModalQuestionsDisponibles();
+        showModal("#modal-add-question");
+    });
+
+    $("#modal-add-question #cancelBtn").on("click", function () {
+        hideModal("#modal-add-question");
     });
 });

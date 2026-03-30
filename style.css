@@ -152,12 +152,18 @@ button {
     justify-content: space-between;
 }
 
-.div-condition {
+.div-condition,
+.div-question {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-#modal-manage-node .condition-str{
+#modal-manage-node .condition-str {
     min-width: 100px;
+}
+
+#modal-add-question #questions-disponibles {
+    display: flex;
+    flex-direction: column;
 }
