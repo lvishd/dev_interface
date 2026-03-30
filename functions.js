@@ -283,7 +283,11 @@ function buildQuestionsJSON(nodeId) {
 }
 
 function deleteQuestions(nodeId) {
+    console.log(nodeId);
+    
     const node = graphJSON.nodes.find((n) => n.id === nodeId);
+    console.log(node);
+    
     node.questions = [];
 }
 
@@ -400,7 +404,7 @@ $(document).ready(function () {
     });
 
     $("#modal-manage-node #saveBtn").on("click", function () {
-        const nodeId = $("#modal-manage-node #node-id").text();
+        const nodeId = $("#modal-manage-node #node-id").text().trim();
         saveNode(nodeId);
         renderDiagram();
         hideModal("#modal-manage-node");
