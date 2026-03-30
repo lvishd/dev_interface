@@ -46,7 +46,7 @@ async function renderDiagram() {
                     if (el.classList.contains("node")) {
                         id = el.querySelector(".nodeLabel p")?.textContent.trim();
                         if (id !== "DEBUT") {
-                            id = id.split("_")[1];
+                            id = id.replace("initialiser_", "");
                         }
                     } else if (el.classList.contains("cluster")) {
                         id = el.getAttribute("id");
