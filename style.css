@@ -167,3 +167,8 @@ button {
     display: flex;
     flex-direction: column;
 }
+
+button:disabled {
+    cursor: default;
+    pointer-events: none;
+}

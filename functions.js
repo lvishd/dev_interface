@@ -45,12 +45,15 @@ async function renderDiagram() {
                     let id;
                     $("#modal-manage-node #box-questions").show();
                     $("#modal-manage-node #box-conditions").show();
+                    $("#modal-manage-node #saveBtn").prop("disabled", false);
+                    $("#modal-manage-node #deleteBtn").prop("disabled", false);
                     if (el.classList.contains("node")) {
                         id = el.querySelector(".nodeLabel p")?.textContent.trim();
                         if (id !== "DEBUT") {
                             id = id.replace("initialiser_", "");
                         } else {
                             $("#modal-manage-node #box-questions").hide();
+                            $("#modal-manage-node #deleteBtn").prop("disabled", true);
                         }
                     } else if (el.classList.contains("cluster")) {
                         id = el.getAttribute("id");
@@ -60,9 +63,10 @@ async function renderDiagram() {
                         const isFinal = nodeJSON.type === "final";
                         let strFinal = "";
                         if (isFinal) {
-                            strFinal = "(etape finale)"
+                            strFinal = "(etape finale)";
                             $("#modal-manage-node #box-questions").hide();
                             $("#modal-manage-node #box-conditions").hide();
+                            $("#modal-manage-node #saveBtn").prop("disabled", true);
                         }
 
                         $("#modal-manage-node #node-id").text(`${id} ${strFinal}`);
