@@ -1,4 +1,7 @@
 graph TD
+    classDef final fill:#c4eac6, stroke:#65ae6a;
+    classDef starting_point fill:#bfe2ef, stroke:#6accee;
+
     %% questions
     Q1["Q1 : Boursier<br/> Etes-vous boursier ? <br/>(O/N)"]
     Q2["Q2 : Double nationalité<br/> Avez-vous une double nationalité ? <br/>(O/N)"]
@@ -20,5 +23,6 @@ graph TD
     DGM-LSO1 -- "2/ Q3=0" --> DN
 
     %% appartenance aux classes
+    class DEBUT starting_point
     class NO final
     class DN final

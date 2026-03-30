@@ -77,7 +77,14 @@ async function renderDiagram() {
 }
 
 function jsonToMermaid(data) {
-    let mermaid = "graph TD\n";
+    let mermaid = 
+    `---
+config:
+    layout: elk
+---
+graph TD
+    classDef final fill:#c4eac6, stroke:#65ae6a;
+    classDef starting_point fill:#bfe2ef, stroke:#6accee;\n\n`;
 
     // --- QUESTIONS ---
     mermaid += "    %% questions\n";
@@ -127,6 +134,7 @@ function jsonToMermaid(data) {
 
     // --- CLASSES ---
     mermaid += "\n    %% appartenance aux classes\n";
+    mermaid += "    class DEBUT starting_point\n";
 
     data.nodes?.forEach((node) => {
         if (node.type === "final") {
@@ -204,11 +212,11 @@ function initModalConditions(nodeId) {
 function initModalQuestions(nodeId) {
     $("#modal-manage-node #container-questions").empty();
 
-    const node = graphJSON.nodes.find(n => n.id === nodeId);
+    const node = graphJSON.nodes.find((n) => n.id === nodeId);
     const questionsIds = node.questions ?? [];
 
     questionsIds.forEach((questionId) => {
-        const question = questionsBouchon.find(q => q.id === questionId) ?? null;
+        const question = questionsBouchon.find((q) => q.id === questionId) ?? null;
         if (question == null) {
             return true;
         }
@@ -241,7 +249,7 @@ function buildTransitionsJSON(nodeId) {
 }
 
 function buildQuestionsJSON(nodeId) {
-    const node = graphJSON.nodes.find(n => n.id === nodeId);
+    const node = graphJSON.nodes.find((n) => n.id === nodeId);
 
     const $questions = $("#modal-manage-node .div-question");
     if ($questions.length == 0) {
@@ -253,9 +261,9 @@ function buildQuestionsJSON(nodeId) {
             const questionId = $div.data("question-id");
             node.questions.push(questionId);
 
-            const question = questionsBouchon.find(q => q.id === questionId);
+            const question = questionsBouchon.find((q) => q.id === questionId);
 
-            if (!graphJSON.questions.some(q => q.id === question.id)) {
+            if (!graphJSON.questions.some((q) => q.id === question.id)) {
                 // push only if not exists in graphJSON.questions
                 graphJSON.questions.push(question);
             }
@@ -264,19 +272,15 @@ function buildQuestionsJSON(nodeId) {
 }
 
 function deleteQuestions(nodeId) {
-    const node = graphJSON.nodes.find(n => n.id === nodeId);
+    const node = graphJSON.nodes.find((n) => n.id === nodeId);
     node.questions = [];
 }
 
 function deleteUnusedQuestionsJSON() {
     // keep only the questions that are actually referenced in at least one node
-    const usedQuestionIds = new Set(
-        graphJSON.nodes.flatMap(node => node.questions)
-    );
+    const usedQuestionIds = new Set(graphJSON.nodes.flatMap((node) => node.questions));
 
-    graphJSON.questions = graphJSON.questions.filter(q =>
-        usedQuestionIds.has(q.id)
-    );
+    graphJSON.questions = graphJSON.questions.filter((q) => usedQuestionIds.has(q.id));
 }
 
 function deleteTransitions(source2delete) {
@@ -316,9 +320,9 @@ function hideModal(id) {
 
 function initModalQuestionsDisponibles() {
     $("#questions-disponibles").empty();
-    questionsBouchon.forEach(question => {
+    questionsBouchon.forEach((question) => {
         const $button = $("<button>", {
-            text: `${question.id} : ${question.title}`
+            text: `${question.id} : ${question.title}`,
         }).on("click", function () {
             const questionRow = createQuestionRow(question);
             addQuestionRow(questionRow);
