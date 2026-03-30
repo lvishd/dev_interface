@@ -44,6 +44,7 @@ async function renderDiagram() {
                     e.stopPropagation();
                     let id;
                     $("#modal-manage-node #box-questions").show();
+                    $("#modal-manage-node #box-conditions").show();
                     if (el.classList.contains("node")) {
                         id = el.querySelector(".nodeLabel p")?.textContent.trim();
                         if (id !== "DEBUT") {
@@ -55,7 +56,16 @@ async function renderDiagram() {
                         id = el.getAttribute("id");
                     }
                     if (id) {
-                        $("#modal-manage-node #node-id").html(id);
+                        const nodeJSON = graphJSON.nodes.find((n) => n.id === id);
+                        const isFinal = nodeJSON.type === "final";
+                        let strFinal = "";
+                        if (isFinal) {
+                            strFinal = "(etape finale)"
+                            $("#modal-manage-node #box-questions").hide();
+                            $("#modal-manage-node #box-conditions").hide();
+                        }
+
+                        $("#modal-manage-node #node-id").text(`${id} ${strFinal}`);
                         initModalQuestions(id);
                         initModalConditions(id);
                         showModal("#modal-manage-node");
@@ -77,8 +87,7 @@ async function renderDiagram() {
 }
 
 function jsonToMermaid(data) {
-    let mermaid = 
-    `---
+    let mermaid = `---
 config:
     layout: elk
 ---
