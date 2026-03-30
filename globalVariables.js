@@ -1,46 +1,126 @@
 let currentConditionSpan = null;
 
 let graphJSON = {
-    "questions": [],
-    "nodes": [
+    questions: [],
+    nodes: [
         {
-            "id": "DEBUT",
-            "label": "DEBUT",
-            "type": "initial",
-            "questions": []
-        }
+            id: "DEBUT",
+            label: "DEBUT",
+            type: "initial",
+            questions: [],
+        },
     ],
-    "transitions": []
+    transitions: [],
+};
+
+graphJSON = {
+    questions: [
+        {
+            id: "Q1",
+            questionNb: "Q1",
+            title: "Boursier",
+            body: "Etes-vous boursier ?",
+            type: "bool",
+            resValues: ["Oui", "Non"],
+            order: 1,
+        },
+        {
+            id: "Q2",
+            questionNb: "Q2",
+            title: "Double nationalité",
+            body: "Avez-vous une double nationalité ?",
+            type: "bool",
+            resValues: ["Oui", "Non"],
+            order: 2,
+        },
+        {
+            id: "Q3",
+            questionNb: "Q3",
+            title: "Situation particulière",
+            body: "Etes-vous dans une situation particulière ?",
+            type: "bool",
+            resValues: ["Oui", "Non"],
+            order: 3,
+        },
+    ],
+
+    nodes: [
+        {
+            id: "DEBUT",
+            label: "DEBUT",
+            type: "initial",
+            questions: [],
+        },
+        {
+            id: "DGM-LSO1",
+            label: "",
+            type: "etape",
+            questions: ["Q1", "Q2", "Q3"],
+        },
+        {
+            id: "DN",
+            label: "PROFIL_DN",
+            type: "final",
+            questions: [],
+        },
+        {
+            id: "NO",
+            label: "PROFIL_NO",
+            type: "final",
+            questions: [],
+        },
+    ],
+
+    transitions: [
+        {
+            source: "DEBUT",
+            target: "DGM-LSO1",
+            condition: "",
+            order: 0,
+        },
+        {
+            source: "DGM-LSO1",
+            target: "NO",
+            condition: "Q1=Oui",
+            order: 1,
+        },
+        {
+            source: "DGM-LSO1",
+            target: "DN",
+            condition: "Q3=Non",
+            order: 2,
+        },
+    ],
 };
 
 let t = null;
 
 const questionsBouchon = [
     {
-        "id": "Q1",
-        "questionNb": "Q1",
-        "title": "Boursier",
-        "body": "Etes-vous boursier ?",
-        "type": "bool",
-        "resValues": ["Oui", "Non"],
-        "order": 1
+        id: "Q1",
+        questionNb: "Q1",
+        title: "Boursier",
+        body: "Etes-vous boursier ?",
+        type: "bool",
+        resValues: ["Oui", "Non"],
+        order: 1,
     },
     {
-        "id": "Q2",
-        "questionNb": "Q2",
-        "title": "Double nationalité",
-        "body": "Avez-vous une double nationalité ?",
-        "type": "bool",
-        "resValues": ["Oui", "Non"],
-        "order": 2
+        id: "Q2",
+        questionNb: "Q2",
+        title: "Double nationalité",
+        body: "Avez-vous une double nationalité ?",
+        type: "bool",
+        resValues: ["Oui", "Non"],
+        order: 2,
     },
     {
-        "id": "Q3",
-        "questionNb": "Q3",
-        "title": "Situation particulière",
-        "body": "Etes-vous dans une situation particulière ?",
-        "type": "bool",
-        "resValues": ["Oui", "Non"],
-        "order": 3
-    }
+        id: "Q3",
+        questionNb: "Q3",
+        title: "Situation particulière",
+        body: "Etes-vous dans une situation particulière ?",
+        type: "bool",
+        resValues: ["Oui", "Non"],
+        order: 3,
+    },
 ];

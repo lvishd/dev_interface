@@ -29,8 +29,6 @@ async function renderDiagram() {
     preview.innerHTML = "";
     preview.textContent = graphMermaid;
 
-    source.value = graphMermaid;
-
     try {
         await mermaid.run({ nodes: [preview] });
 
@@ -353,11 +351,6 @@ $(document).ready(function () {
         securityLevel: "loose",
         theme: "default",
     });
-
-    const source = document.getElementById("source");
-    const preview = document.getElementById("preview");
-    const error = document.getElementById("error");
-    const btn = document.getElementById("renderBtn");
 
     renderDiagram();
 
