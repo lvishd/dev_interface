@@ -5,7 +5,7 @@ graph TD
     Q3["Q3 : Situation particulière<br/> Etes-vous dans une situation particulière ? <br/>(O/N)"]
 
     %% nodes
-    debut((DEBUT))
+    DEBUT((DEBUT))
 
     subgraph DGM-LSO1
         direction LR
@@ -15,7 +15,7 @@ graph TD
     NO[PROFIL_NO]
 
     %% transitions
-    debut --> DGM-LSO1
+    DEBUT --> DGM-LSO1
     DGM-LSO1 -- "1/ Q1=1" --> NO
     DGM-LSO1 -- "2/ Q3=0" --> DN
 

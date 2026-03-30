@@ -6,7 +6,7 @@ function resetGraph() {
         questions: [],
         nodes: [
             {
-                id: "debut",
+                id: "DEBUT",
                 label: "DEBUT",
                 type: "initial",
                 questions: [],
@@ -37,18 +37,23 @@ async function renderDiagram() {
         const svgElement = document.querySelector("#preview svg");
 
         if (svgElement) {
-            const interactives = svgElement.querySelectorAll(".cluster");
+            const interactives = svgElement.querySelectorAll(".node, .cluster");
 
             interactives.forEach((el) => {
                 el.addEventListener("click", function (e) {
                     e.stopPropagation();
-
-                    const rawId = el.getAttribute("id");
-                    if (rawId) {
-                        $("#modal-manage-node #node-id").html(rawId);
-
-                        initModalConditions(rawId);
-
+                    let id;
+                    if (el.classList.contains("node")) {
+                        id = el.querySelector(".nodeLabel p")?.textContent.trim();
+                        if (id !== "DEBUT") {
+                            id = null;
+                        }
+                    } else if (el.classList.contains("cluster")) {
+                        id = el.getAttribute("id");
+                    }
+                    if (id) {
+                        $("#modal-manage-node #node-id").html(id);
+                        initModalConditions(id);
                         showModal("#modal-manage-node");
                     }
                 });

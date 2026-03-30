@@ -4,7 +4,7 @@ let graphJSON = {
     "questions": [],
     "nodes": [
         {
-            "id": "debut",
+            "id": "DEBUT",
             "label": "DEBUT",
             "type": "initial",
             "questions": []
@@ -19,7 +19,7 @@ graphJSON = {
     "questions": [],
     "nodes": [
         {
-            "id": "debut",
+            "id": "DEBUT",
             "label": "DEBUT",
             "type": "initial",
             "questions": []
@@ -42,17 +42,5 @@ graphJSON = {
         }
     ],
     "transitions": [
-        {
-            "source": "test",
-            "target": "debut",
-            "condition": "",
-            "order": 0
-        },
-        {
-            "source": "test2",
-            "target": "test",
-            "condition": "",
-            "order": 0
-        }
     ]
 };
