@@ -160,10 +160,10 @@ function addNode(node) {
     graphJSON.nodes.push(node);
 }
 
-function createConditionRow(nodeIdsList = []) {
+function createConditionRow(transition) {
     const $row = $(`
         <div class="list-row div-condition">
-            <span class="condition-str"></span>
+            <span class="condition-str">${transition.condition}</span>
             <select class="select-available-nodes"></select>
             <button class="modify-condition">M</button>
             <button class="delete-condition">X</button>
@@ -172,7 +172,8 @@ function createConditionRow(nodeIdsList = []) {
 
     const $select = $row.find(".select-available-nodes");
 
-    nodeIdsList.forEach((id) => {
+    const nodesIdsList = getNodeIdsList();
+    nodesIdsList.forEach((id) => {
         $select.append(
             $("<option>", {
                 value: id,
@@ -204,13 +205,11 @@ function addQuestionRow(elem) {
 }
 
 function initModalConditions(nodeId) {
-    const nodesIdsList = getNodeIdsList();
-
     $("#modal-manage-node #container-conditions").empty();
 
     graphJSON.transitions.forEach((transition) => {
         if (transition.source === nodeId) {
-            const $row = createConditionRow(nodesIdsList);
+            const $row = createConditionRow(transition);
 
             const $select = $row.find(".select-available-nodes");
             $select.val(transition.target);
