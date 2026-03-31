@@ -83,7 +83,7 @@ button {
 }
 
 .modal-content {
-    background: white;
+    background: rgb(208, 211, 221);
     padding: 20px;
     border-radius: 8px;
     min-width: 300px;
@@ -113,23 +113,25 @@ button {
 #modal-manage-node #box-conditions {
     height: 100%;
     width: fit-content;
+    background-color: #ffffff63;
+    border: solid transparent 1px;
+    border-radius: 5px;
 }
 
 #modal-manage-node #container-questions,
 #modal-manage-node #container-conditions {
     height: fit-content;
     width: 100%;
-    border: solid rgb(164, 164, 164) 2px;
-    border-radius: 3px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 1px;
 }
 
 .list-row {
     padding: 5px;
     background: #f2f2f2;
     border: 1px solid #ccc;
+    border-radius: 5px;
     cursor: grab;
 }
 
@@ -167,8 +169,16 @@ button {
 }
 
 #main-container button {
-    margin: 0px;
+    margin: 0px 0px 0px 4px;
     padding: 6px;
+    background-color: transparent;
+    border: solid rgb(193, 196, 205) 1px;
+    border-radius: 5px;
+}
+
+#main-container button:hover {
+    background-color: rgb(229, 233, 243);
+    border: solid rgb(183, 186, 194) 1px;
 }
 
 button:disabled {
