@@ -44,12 +44,14 @@ async function renderDiagram() {
                     const $modal = $("#modal-manage-node");
                     const $questions = $modal.find("#box-questions");
                     const $conditions = $modal.find("#box-conditions");
+                    const $finalSuffixe = $modal.find("#node-type-final");
                     const $saveBtn = $modal.find("#saveBtn");
                     const $deleteBtn = $modal.find("#deleteBtn");
 
                     // default UI state
                     $questions.show();
                     $conditions.show();
+                    $finalSuffixe.hide();
                     $saveBtn.prop("disabled", false);
                     $deleteBtn.prop("disabled", false);
 
@@ -78,7 +80,7 @@ async function renderDiagram() {
 
                     let suffix = "";
                     if (isFinal) {
-                        suffix = " (etape finale)";
+                        $finalSuffixe.show();
                         $questions.hide();
                         $conditions.hide();
                         $saveBtn.prop("disabled", true);
