@@ -52,7 +52,6 @@ async function renderDiagram() {
                         if (id !== "DEBUT" && !isFinal) {
                             const class_parent_ = el.classList[el.classList.length - 1];
                             id = class_parent_.replace("parent_", "");
-                            // id = id.replace("initialiser_", "");
                         } else {
                             $("#modal-manage-node #box-questions").hide();
                             $("#modal-manage-node #deleteBtn").prop("disabled", true);
