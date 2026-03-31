@@ -38,42 +38,57 @@ async function renderDiagram() {
             const interactives = svgElement.querySelectorAll(".node, .cluster");
 
             interactives.forEach((el) => {
-                el.addEventListener("click", function (e) {
+                el.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    let id;
-                    $("#modal-manage-node #box-questions").show();
-                    $("#modal-manage-node #box-conditions").show();
-                    $("#modal-manage-node #saveBtn").prop("disabled", false);
-                    $("#modal-manage-node #deleteBtn").prop("disabled", false);
 
+                    const $modal = $("#modal-manage-node");
+                    const $questions = $modal.find("#box-questions");
+                    const $conditions = $modal.find("#box-conditions");
+                    const $saveBtn = $modal.find("#saveBtn");
+                    const $deleteBtn = $modal.find("#deleteBtn");
+
+                    // default UI state
+                    $questions.show();
+                    $conditions.show();
+                    $saveBtn.prop("disabled", false);
+                    $deleteBtn.prop("disabled", false);
+
+                    let id = null;
+                    const isNode = el.classList.contains("node");
                     const isFinal = el.classList.contains("final");
-                    if (el.classList.contains("node")) {
-                        id = el.querySelector(".nodeLabel p")?.textContent.trim();
-                        if (id !== "DEBUT" && !isFinal) {
-                            const class_parent_ = el.classList[el.classList.length - 1];
-                            id = class_parent_.replace("parent_", "");
-                        } else if (id == "DEBUT") {
-                            $("#modal-manage-node #box-questions").hide();
-                            $("#modal-manage-node #deleteBtn").prop("disabled", true);
+
+                    if (isNode) {
+                        const label = el.querySelector(".nodeLabel p")?.textContent.trim();
+
+                        if (label === "DEBUT") {
+                            id = label;
+                            $questions.hide();
+                            $deleteBtn.prop("disabled", true);
+                        } else if (!isFinal) {
+                            const parentClass = [...el.classList].find(c => c.startsWith("parent_"));
+                            id = parentClass?.replace("parent_", "");
+                        } else {
+                            id = label;
                         }
-                        
-                    } else if (el.classList.contains("cluster")) {
+                    } else {
                         id = el.getAttribute("id");
                     }
-                    if (id) {
-                        let strFinal = "";
-                        if (isFinal) {
-                            strFinal = "(etape finale)";
-                            $("#modal-manage-node #box-questions").hide();
-                            $("#modal-manage-node #box-conditions").hide();
-                            $("#modal-manage-node #saveBtn").prop("disabled", true);
-                        }
 
-                        $("#modal-manage-node #node-id").text(`${id} ${strFinal}`);
-                        initModalQuestions(id);
-                        initModalConditions(id);
-                        showModal("#modal-manage-node");
+                    if (!id) return;
+
+                    let suffix = "";
+                    if (isFinal) {
+                        suffix = " (etape finale)";
+                        $questions.hide();
+                        $conditions.hide();
+                        $saveBtn.prop("disabled", true);
                     }
+
+                    $modal.find("#node-id").text(`${id}${suffix}`);
+
+                    initModalQuestions(id);
+                    initModalConditions(id);
+                    showModal("#modal-manage-node");
                 });
             });
 
