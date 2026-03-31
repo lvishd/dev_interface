@@ -45,10 +45,14 @@ async function renderDiagram() {
                     $("#modal-manage-node #box-conditions").show();
                     $("#modal-manage-node #saveBtn").prop("disabled", false);
                     $("#modal-manage-node #deleteBtn").prop("disabled", false);
+
+                    const isFinal = el.classList.contains("final");
                     if (el.classList.contains("node")) {
                         id = el.querySelector(".nodeLabel p")?.textContent.trim();
-                        if (id !== "DEBUT") {
-                            id = id.replace("initialiser_", "");
+                        if (id !== "DEBUT" && !isFinal) {
+                            const class_parent_ = el.classList[el.classList.length - 1];
+                            id = class_parent_.replace("parent_", "");
+                            // id = id.replace("initialiser_", "");
                         } else {
                             $("#modal-manage-node #box-questions").hide();
                             $("#modal-manage-node #deleteBtn").prop("disabled", true);
@@ -57,8 +61,6 @@ async function renderDiagram() {
                         id = el.getAttribute("id");
                     }
                     if (id) {
-                        const nodeJSON = graphJSON.nodes.find((n) => n.id === id);
-                        const isFinal = nodeJSON.type === "final";
                         let strFinal = "";
                         if (isFinal) {
                             strFinal = "(etape finale)";
@@ -119,7 +121,12 @@ graph TD
             mermaid += `        direction LR\n`;
 
             if (node.questions && node.questions.length > 0) {
-                mermaid += "        " + node.questions.join("~~~~") + "\n";
+                mermaid +=
+                    "        " +
+                    node.questions
+                        .map((q) => `${q}:::parent_${node.id}`)
+                        .join("~~~~") +
+                    "\n";
             }
 
             mermaid += "    end\n";
@@ -282,11 +289,7 @@ function buildQuestionsJSON(nodeId) {
 }
 
 function deleteQuestions(nodeId) {
-    console.log(nodeId);
-    
     const node = graphJSON.nodes.find((n) => n.id === nodeId);
-    console.log(node);
-    
     node.questions = [];
 }
 
