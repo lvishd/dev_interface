@@ -157,6 +157,7 @@ button {
     min-width: 100px;
     display: flex;
     align-items: center;
+    font-size: 15px;
 }
 
 #modal-add-question #questions-disponibles {
@@ -177,4 +178,9 @@ button:disabled {
 
 .title-header span {
     font-weight: 600;
+}
+
+#container-conditions .delete-condition,
+#container-questions .delete-question {
+    color: #840000;
 }
