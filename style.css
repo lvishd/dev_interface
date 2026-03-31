@@ -98,41 +98,36 @@ button {
 .buttons {
     margin-top: 15px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
 }
 
 #modal-manage-node #main-container {
     height: 100%;
     width: 100%;
-    background-color: rgb(255, 198, 198);
     display: flex;
     justify-content: space-around;
-
+    gap: 20px;
 }
 
 #modal-manage-node #box-questions,
 #modal-manage-node #box-conditions {
     height: 100%;
     width: fit-content;
-    border: solid blue 1px;
 }
-
-#modal-manage-node #box-questions {}
-
-#modal-manage-node #box-conditions {}
 
 #modal-manage-node #container-questions,
 #modal-manage-node #container-conditions {
     height: fit-content;
     width: 100%;
-    border: solid black 1px;
+    border: solid rgb(164, 164, 164) 2px;
+    border-radius: 3px;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
 .list-row {
-    padding: 7px;
+    padding: 5px;
     background: #f2f2f2;
     border: 1px solid #ccc;
     cursor: grab;
@@ -146,6 +141,7 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 .div-condition,
@@ -153,18 +149,32 @@ button {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: stretch;
 }
 
-#modal-manage-node .condition-str {
+#modal-manage-node .condition-str,
+#modal-manage-node .question-str {
     min-width: 100px;
+    display: flex;
+    align-items: center;
 }
 
 #modal-add-question #questions-disponibles {
     display: flex;
     flex-direction: column;
+    gap: 5px;
+}
+
+#main-container button {
+    margin: 0px;
+    padding: 6px;
 }
 
 button:disabled {
     cursor: default;
     pointer-events: none;
+}
+
+.title-header span {
+    font-weight: 600;
 }
