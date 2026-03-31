@@ -393,6 +393,12 @@ $(document).ready(function () {
 
     $("#modal-add-node #createBtn").on("click", function () {
         const id = $("#nodeId").val().trim();
+
+        const existingIds = graphJSON.nodes.map(n => n.id);
+        if (existingIds.includes(id)) {
+            alert("Cet ID existe déjà");
+            return;
+        }
         const type = $('input[name="type"]:checked').val();
 
         if (!id) {
