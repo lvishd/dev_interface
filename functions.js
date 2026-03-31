@@ -169,7 +169,7 @@ function addNode(node) {
 function createConditionRow(transition) {
     const $row = $(`
         <div class="list-row div-condition">
-            <span class="condition-str">${transition.condition}</span>
+            <span class="condition-str">${transition ? transition.condition : ""}</span>
             <select class="select-available-nodes"></select>
             <button class="modify-condition">M</button>
             <button class="delete-condition">X</button>
@@ -472,8 +472,7 @@ $(document).ready(function () {
     });
 
     $("#modal-manage-node #add-condition-btn").on("click", function () {
-        const nodeIdsList = getNodeIdsList();
-        const conditionRow = createConditionRow(nodeIdsList);
+        const conditionRow = createConditionRow();
         addConditionRow(conditionRow);
     });
 
