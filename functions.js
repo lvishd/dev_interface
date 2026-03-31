@@ -52,10 +52,11 @@ async function renderDiagram() {
                         if (id !== "DEBUT" && !isFinal) {
                             const class_parent_ = el.classList[el.classList.length - 1];
                             id = class_parent_.replace("parent_", "");
-                        } else {
+                        } else if (id == "DEBUT") {
                             $("#modal-manage-node #box-questions").hide();
                             $("#modal-manage-node #deleteBtn").prop("disabled", true);
                         }
+                        
                     } else if (el.classList.contains("cluster")) {
                         id = el.getAttribute("id");
                     }
