@@ -221,7 +221,7 @@ function createConditionRow(transition) {
 function createQuestionRow(question) {
     const $row = $(`
         <div class="list-row div-question" data-question-id="${question.id}">
-            <span class="question-str">${question.title}</span>
+            <span class="question-str">${question.id} : ${question.title}</span>
             <button class="delete-question">X</button>
         </div>
     `);
