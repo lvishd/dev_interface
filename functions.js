@@ -2,6 +2,10 @@ import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.mi
 import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs";
 
 function resetGraph() {
+    // deux possibilités: recommencer le graphe ou bien revenir en arrière
+    // saveStacks();
+    undoStack = [];
+    redoStack = [];
     graphJSON = {
         questions: [],
         nodes: [
@@ -181,6 +185,8 @@ graph TD
 }
 
 function addNode(node) {
+    saveStacks();
+
     graphJSON.nodes.push(node);
 }
 
@@ -322,6 +328,8 @@ function deleteTransitions(source2delete) {
 }
 
 function deleteNode(node2delete) {
+    saveStacks();
+
     graphJSON.nodes = graphJSON.nodes.filter((node) => {
         return node.id !== node2delete;
     });
@@ -332,6 +340,8 @@ function deleteNode(node2delete) {
 }
 
 function saveNode(nodeId) {
+    saveStacks();
+
     // questions
     // les questions du node sont maj de zéro
     deleteQuestions(nodeId);
@@ -364,6 +374,30 @@ function initModalQuestionsDisponibles() {
         });
         $("#questions-disponibles").append($button);
     });
+}
+
+function undo() {
+    if (undoStack.length === 0) return;
+
+    redoStack.push(structuredClone(graphJSON));
+    graphJSON = undoStack.pop();
+    renderDiagram();
+}
+
+function redo() {
+    if (redoStack.length === 0) return;
+
+    undoStack.push(structuredClone(graphJSON));
+    graphJSON = redoStack.pop();
+    renderDiagram();
+}
+
+function saveStacks() {
+    undoStack.push(structuredClone(graphJSON));
+    if (undoStack.length > MAX_HISTORY) {
+        undoStack.shift();
+    }
+    redoStack = [];
 }
 
 $(document).ready(function () {
@@ -507,5 +541,25 @@ $(document).ready(function () {
 
     $("#modal-add-question #cancelBtn").on("click", function () {
         hideModal("#modal-add-question");
+    });
+
+    $("#undo-graph-btn").on("click", function () {
+        undo();
+    });
+
+    $("#redo-graph-btn").on("click", function () {
+        redo();
+    });
+
+    $(document).on("keydown", function(e) {
+        if (e.ctrlKey && e.key === "z") {
+            e.preventDefault();
+            undo();
+        }
+
+        if (e.ctrlKey && e.key === "y") {
+            e.preventDefault();
+            redo();
+        }
     });
 });

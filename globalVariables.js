@@ -1,5 +1,9 @@
 let currentConditionSpan = null;
 
+let undoStack = [];
+let redoStack = [];
+const MAX_HISTORY = 10;
+
 let graphJSON = {
     questions: [],
     nodes: [
