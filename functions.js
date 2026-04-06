@@ -1,5 +1,5 @@
-import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs";
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.esm.min.mjs";
+import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.1/dist/mermaid-layout-elk.esm.min.mjs";
 
 function resetGraph() {
     // deux possibilités: recommencer le graphe ou bien revenir en arrière
@@ -78,6 +78,9 @@ async function renderDiagram() {
                         }
                     } else {
                         id = el.getAttribute("id");
+                        if (id === "[object Object]") {
+                            id = $(el).find(".nodeLabel p").text();
+                        }
                     }
 
                     if (!id) return;
@@ -91,7 +94,7 @@ async function renderDiagram() {
                     }
 
                     $modal.find("#node-id").text(`${id}${suffix}`);
-
+                    
                     initModalQuestions(id);
                     initModalConditions(id);
                     showModal("#modal-manage-node");
