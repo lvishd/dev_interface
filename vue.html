@@ -6,6 +6,11 @@
 
         <title>Mermaid + ELK</title>
 
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
         <!-- Styles -->
         <link rel="stylesheet" href="style.css" />
 
@@ -17,15 +22,24 @@
         ></script>
         <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+        <!-- Quill WYSIWYG -->
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     </head>
 
     <body>
         <div class="container">
-            <div>
-                <button id="reset-graph">Reset</button>
-                <button id="add-node-btn">Ajouter un élément</button>
-                <button id="undo-graph-btn">UNDO</button>
-                <button id="redo-graph-btn">REDO</button>
+            <div class="toolbar">
+                <button class="btn btn-light" id="reset-graph">Reset</button>
+                <button class="btn btn-primary" id="add-node-btn">+ Ajouter un élément</button>
+                <div class="toolbar-separator"></div>
+                <button class="icon-btn toolbar-icon" id="undo-graph-btn" title="Annuler (Ctrl+Z)" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </button>
+                <button class="icon-btn toolbar-icon" id="redo-graph-btn" title="Rétablir (Ctrl+Y)" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>
+                </button>
             </div>
 
             <div id="preview" class="mermaid"></div>
@@ -33,88 +47,266 @@
 
         <div id="error"></div>
 
+        <!-- Modal : Ajouter un nœud -->
         <div id="modal-add-node" class="modal hidden">
             <div class="modal-content">
-                <h3>Créer un élément</h3>
-
-                <input type="text" id="nodeId" placeholder="id" />
-
-                <div>
-                    Type :
-                    <label>
-                        <input type="radio" name="type" value="etape" checked />
-                        etape
-                    </label>
-                    <label>
-                        <input type="radio" name="type" value="final" />
-                        final
-                    </label>
+                <button class="close-modal" id="closeAddNode" aria-label="Fermer">×</button>
+                <div class="modal-header">
+                    <h1 class="modal-title">Créer un élément</h1>
+                    <p class="modal-subtitle">Ajoutez une nouvelle étape ou un nœud final au graphe.</p>
                 </div>
-
-                <div class="buttons">
-                    <button id="createBtn">Créer</button>
-                    <button id="cancelBtn">Annuler</button>
+                <div class="modal-body">
+                    <input type="text" id="nodeId" placeholder="Identifiant du nœud" />
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="type" value="etape" checked />
+                            <span>Étape</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="final" />
+                            <span>Final</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="email" />
+                            <span>Email</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="tunnel" />
+                            <span>Tunnel</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" id="cancelBtn">Annuler</button>
+                    <button class="btn btn-primary" id="createBtn">Créer</button>
                 </div>
             </div>
         </div>
 
+        <!-- Modal : Gérer un nœud -->
         <div id="modal-manage-node" class="modal hidden">
             <div class="modal-content">
-                <h3>
-                    Etape
-                    <span id="node-id"></span>
-                    <span id="node-type-final"> (étape finale)</span>
-                </h3>
+                <button class="close-modal" id="closeManageNode" aria-label="Fermer">×</button>
 
-                <div id="main-container">
-                    <div id="box-questions">
-                        <div class="title-header">
-                            <span>Questions</span>
-                            <button id="add-question-btn">+</button>
+                <div class="modal-header">
+                    <div class="header-top">
+                        <div>
+                            <h1 class="modal-title">
+                                Étape
+                                <span id="node-id"></span>
+                                <span id="node-type-final"> étape finale</span>
+                            </h1>
+                            <p class="modal-subtitle">Gérez les questions et les conditions de sortie de ce bloc.</p>
+                        </div>
+                        <div class="stats">
+                            <div class="stat-card">
+                                <div class="stat-label">Questions</div>
+                                <div class="stat-value" id="stat-questions">0</div>
+                                <div class="stat-sub">actives</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Conditions</div>
+                                <div class="stat-value" id="stat-conditions">0</div>
+                                <div class="stat-sub">définies</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <section class="panel" id="box-questions">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Questions</h2>
+                                <p class="panel-subtitle">Questions posées dans ce bloc.</p>
+                            </div>
+                            <button class="icon-btn" id="add-question-btn" title="Ajouter une question">+</button>
                         </div>
                         <div id="container-questions"></div>
-                    </div>
-                    <div id="box-conditions">
-                        <div class="title-header">
-                            <span>Conditions</span>
-                            <button id="add-condition-btn">+</button>
+                    </section>
+
+                    <section class="panel" id="box-conditions">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Conditions & sorties</h2>
+                                <p class="panel-subtitle">Règles de redirection vers d'autres nœuds.</p>
+                            </div>
+                            <button class="icon-btn" id="add-condition-btn" title="Ajouter une condition">+</button>
                         </div>
                         <div id="container-conditions"></div>
-                    </div>
+                    </section>
+
+                    <!-- Email template editor (visible only for email nodes) -->
+                    <section class="panel" id="box-email-template" style="display:none;">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Template email</h2>
+                                <p class="panel-subtitle">Composez le contenu du mail. Insérez des variables dynamiques.</p>
+                            </div>
+                        </div>
+                        <div class="email-fields">
+                            <div class="form-group">
+                                <label for="emailSubject">Objet du mail</label>
+                                <input type="text" id="emailSubject" placeholder="Ex : Votre dossier d'inscription" />
+                            </div>
+                            <div class="form-group">
+                                <label>Variables disponibles</label>
+                                <div id="variable-pills" class="variable-pills">
+                                    <button type="button" class="var-pill" data-var="${etudiant_nom}">etudiant_nom</button>
+                                    <button type="button" class="var-pill" data-var="${etudiant_prenom}">etudiant_prenom</button>
+                                    <button type="button" class="var-pill" data-var="${etudiant_email}">etudiant_email</button>
+                                    <button type="button" class="var-pill" data-var="${etudiant_ine}">etudiant_ine</button>
+                                    <button type="button" class="var-pill" data-var="${formation_nom}">formation_nom</button>
+                                    <button type="button" class="var-pill" data-var="${profil_code}">profil_code</button>
+                                    <button type="button" class="var-pill" data-var="${date_jour}">date_jour</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Corps du mail</label>
+                                <div id="email-editor"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tunnel config (visible only for tunnel nodes) -->
+                    <section class="panel" id="box-tunnel-config" style="display:none;">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Redirection tunnel</h2>
+                                <p class="panel-subtitle">Configurez le tunnel cible vers lequel l'étudiant sera redirigé.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" style="padding: 0 20px 20px;">
+                            <label for="tunnelTarget">Nom du tunnel cible</label>
+                            <input type="text" id="tunnelTarget" placeholder="Ex : TUNNEL_REINSCRIPTION" />
+                        </div>
+                    </section>
                 </div>
 
-                <div class="buttons">
-                    <button id="deleteBtn">Supprimer</button>
-                    <button id="saveBtn">Enregistrer</button>
-                    <button id="cancelBtn">Annuler</button>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="deleteBtn">Supprimer</button>
+                    <button class="btn btn-dark" id="saveBtn">Enregistrer</button>
+                    <button class="btn btn-light" id="cancelBtn">Annuler</button>
                 </div>
             </div>
         </div>
 
+        <!-- Modal : Choisir une question -->
         <div id="modal-add-question" class="modal hidden">
             <div class="modal-content">
-                <h3>Questions</h3>
-
-                <div id="questions-disponibles">
-                    <button>Q1: Boursier ?</button>
-                    <button>Q2: Double Nationalité</button>
+                <button class="close-modal" id="closeAddQuestion" aria-label="Fermer">×</button>
+                <div class="modal-header">
+                    <h1 class="modal-title">Ajouter une question</h1>
+                    <p class="modal-subtitle">Sélectionnez une question existante ou créez-en une nouvelle.</p>
                 </div>
+                <div class="modal-body">
+                    <div id="questions-disponibles"></div>
 
-                <div class="buttons">
-                    <button id="cancelBtn">Annuler</button>
+                    <div class="separator">
+                        <span>ou</span>
+                    </div>
+
+                    <div id="new-question-form">
+                        <h3 class="form-section-title">Créer une nouvelle question</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="newQuestionId">Code</label>
+                                <input type="text" id="newQuestionId" placeholder="Ex : Q4" />
+                            </div>
+                            <div class="form-group">
+                                <label for="newQuestionTitle">Titre court</label>
+                                <input type="text" id="newQuestionTitle" placeholder="Ex : Handicap" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="newQuestionBody">Question posée</label>
+                            <input type="text" id="newQuestionBody" placeholder="Ex : Êtes-vous en situation de handicap ?" />
+                        </div>
+                        <div class="form-group">
+                            <label for="newQuestionType">Type de réponse</label>
+                            <select id="newQuestionType">
+                                <option value="bool" selected>Oui / Non</option>
+                                <option value="text">Texte libre</option>
+                                <option value="number">Nombre</option>
+                                <option value="select">Liste à choix</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="newQuestionValuesGroup" style="display:none;">
+                            <label for="newQuestionValues">Valeurs possibles</label>
+                            <input type="text" id="newQuestionValues" placeholder="Ex : réfugié, enfant de personnel, handicap" />
+                            <span class="form-hint">Séparez les valeurs par des virgules.</span>
+                        </div>
+                        <button class="btn btn-primary" id="createQuestionBtn">Créer et ajouter</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" id="cancelBtn">Annuler</button>
                 </div>
             </div>
         </div>
 
+        <!-- Modal : Modifier une question -->
+        <div id="modal-edit-question" class="modal hidden">
+            <div class="modal-content">
+                <button class="close-modal" id="closeEditQuestion" aria-label="Fermer">×</button>
+                <div class="modal-header">
+                    <h1 class="modal-title">Modifier la question</h1>
+                    <p class="modal-subtitle">Modifiez les détails de cette question.</p>
+                </div>
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editQuestionId">Code</label>
+                            <input type="text" id="editQuestionId" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="editQuestionTitle">Titre court</label>
+                            <input type="text" id="editQuestionTitle" placeholder="Titre" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editQuestionBody">Question posée</label>
+                        <input type="text" id="editQuestionBody" placeholder="Texte de la question" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editQuestionType">Type de réponse</label>
+                        <select id="editQuestionType">
+                            <option value="bool">Oui / Non</option>
+                            <option value="text">Texte libre</option>
+                            <option value="number">Nombre</option>
+                            <option value="select">Liste à choix</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="editQuestionValuesGroup" style="display:none;">
+                        <label for="editQuestionValues">Valeurs possibles</label>
+                        <input type="text" id="editQuestionValues" placeholder="Ex : réfugié, enfant de personnel, handicap" />
+                        <span class="form-hint">Séparez les valeurs par des virgules.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" id="cancelEditQuestionBtn">Annuler</button>
+                    <button class="btn btn-primary" id="saveEditQuestionBtn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal : Modifier une condition -->
         <div id="modal-modify-condition" class="modal hidden">
             <div class="modal-content">
-                <h3>Condition</h3>
-
-                <input type="text" placeholder="Condition" />
-
-                <div class="buttons">
-                    <button id="saveBtn">Enregistrer</button>
-                    <button id="cancelBtn">Annuler</button>
+                <button class="close-modal" id="closeModifyCondition" aria-label="Fermer">×</button>
+                <div class="modal-header">
+                    <h1 class="modal-title">Modifier la condition</h1>
+                    <p class="modal-subtitle">Saisissez l'expression de la condition.</p>
+                </div>
+                <div class="modal-body">
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="conditionInput" placeholder="Ex : @Q1=Oui — tapez @ ou $ pour insérer une question" autocomplete="off" />
+                        <div id="autocomplete-dropdown" class="autocomplete-dropdown hidden"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" id="cancelBtn">Annuler</button>
+                    <button class="btn btn-primary" id="saveBtn">Enregistrer</button>
                 </div>
             </div>
         </div>

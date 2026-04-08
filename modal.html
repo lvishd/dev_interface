@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modal bloc questions / règles</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --overlay: rgba(15, 23, 42, 0.45);
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #dbe3ef;
+      --line-strong: #c7d2e3;
+      --text: #172033;
+      --muted: #66738b;
+      --muted-2: #8a94a6;
+      --primary: #5b6cff;
+      --primary-dark: #4455f5;
+      --primary-soft: #eef1ff;
+      --success: #23b26d;
+      --success-soft: #eafaf2;
+      --info: #2f7cf6;
+      --info-soft: #edf4ff;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.18);
+      --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #e9eef7 0%, #f6f8fc 100%);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      position: relative;
+      width: min(1180px, 100%);
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 30px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .modal-header {
+      padding: 28px 32px 24px;
+      background:
+        radial-gradient(circle at top right, rgba(91,108,255,.12), transparent 28%),
+        linear-gradient(180deg, #fbfcff 0%, #f5f8fd 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--primary);
+      background: var(--primary-soft);
+      border: 1px solid #d9dfff;
+      border-radius: 999px;
+      padding: 8px 12px;
+    }
+
+    .modal-title {
+      margin: 14px 0 8px;
+      font-size: 34px;
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .modal-subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 12px;
+      min-width: 360px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted-2);
+      font-weight: 700;
+    }
+
+    .stat-value {
+      margin-top: 6px;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-sub {
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .modal-body {
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--panel-soft);
+      padding: 20px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .icon-btn,
+    .action-btn,
+    .btn {
+      border: none;
+      cursor: pointer;
+      transition: .2s ease;
+      font: inherit;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+      box-shadow: var(--shadow-md);
+    }
+
+    .icon-btn:hover,
+    .action-btn:hover {
+      transform: translateY(-1px);
+      border-color: #b8c5ff;
+      color: var(--primary);
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .question-card,
+    .rule-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-card:hover,
+    .rule-card:hover {
+      border-color: #cfd8ff;
+      transform: translateY(-1px);
+    }
+
+    .question-row,
+    .rule-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .question-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .question-code {
+      width: 54px;
+      min-width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #eff2ff 0%, #e2e8ff 100%);
+      color: var(--primary-dark);
+      border: 1px solid #d5dcff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    }
+
+    .question-title {
+      margin: 2px 0 0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .question-text {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: #516074;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 15px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .rule-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-dark,
+    .tag-info,
+    .tag-success {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .01em;
+      border: 1px solid transparent;
+    }
+
+    .tag-dark {
+      background: #1c2437;
+      color: #fff;
+    }
+
+    .tag-info {
+      background: var(--info-soft);
+      color: var(--info);
+      border-color: #cfe0ff;
+    }
+
+    .tag-success {
+      background: var(--success-soft);
+      color: var(--success);
+      border-color: #cdeedc;
+    }
+
+    .rule-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 42px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .rule-box,
+    .result-box {
+      border-radius: 16px;
+      padding: 14px 16px;
+      min-height: 84px;
+    }
+
+    .rule-box {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .result-box {
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+      border: 1px dashed var(--line-strong);
+    }
+
+    .box-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted-2);
+      font-weight: 800;
+    }
+
+    .box-value {
+      margin-top: 8px;
+      font-size: 15px;
+      line-height: 1.6;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .arrow {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f6fb;
+      border: 1px solid var(--line);
+      color: #90a0b7;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .target-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #111827;
+      color: #fff;
+      border-radius: 12px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      margin: 0 6px;
+    }
+
+    .target-type {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .modal-footer {
+      padding: 20px 32px 26px;
+      border-top: 1px solid var(--line);
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-note {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-light {
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+    }
+
+    .btn-dark {
+      background: #121a2f;
+      color: #fff;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #6a4dff 100%);
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(207, 216, 255, 0.9);
+      background: rgba(255, 255, 255, 0.88);
+      color: #56637a;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      z-index: 3;
+    }
+
+    .close-modal:hover {
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 980px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        min-width: unset;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .page { padding: 14px; }
+      .modal-header,
+      .modal-body,
+      .modal-footer { padding-left: 18px; padding-right: 18px; }
+      .modal-title { font-size: 26px; }
+      .stats { grid-template-columns: 1fr; }
+      .rule-grid { grid-template-columns: 1fr; }
+      .arrow { display: none; }
+      .question-row,
+      .rule-top { flex-direction: column; }
+      .actions { width: 100%; justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="backdrop"></div>
+
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="close-modal" id="closeModalTop" aria-label="Fermer">×</button>
+
+      <div class="modal-header">
+        <div class="header-top">
+          <div>
+            <!-- <div class="eyebrow">Bloc de configuration</div> -->
+            <h1 class="modal-title" id="modal-title">BLOC DIP-NAT</h1>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-label">Questions</div>
+              <div class="stat-value" id="questionCount">3</div>
+              <div class="stat-sub">actives</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Conditions</div>
+              <div class="stat-value" id="conditionCount">2</div>
+              <div class="stat-sub">définies</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Sorties</div>
+              <div class="stat-value" id="outputCount">2</div>
+              <div class="stat-sub">configurées</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Questions du bloc</h2>
+              <p class="panel-subtitle">Questions posées à l’utilisateur à l’intérieur de ce bloc.</p>
+            </div>
+            <button class="icon-btn" id="addQuestionBtn" title="Ajouter une question">+</button>
+          </div>
+
+          <div class="list" id="questionsList"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Conditions & résultats</h2>
+              <p class="panel-subtitle">Chaque règle exprime une condition puis la cible de redirection.</p>
+            </div>
+            <button class="icon-btn" id="addRuleBtn" title="Ajouter une condition">+</button>
+          </div>
+
+          <div class="list" id="rulesList"></div>
+        </section>
+      </div>
+
+      <div class="modal-footer">
+        <div class="footer-note">
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-light" id="cancelBtn" style="display: none;">Annuler</button>
+          <button class="btn btn-dark" id="saveBtn">Enregistrer</button>
+          <button class="btn btn-primary" id="closeBtn">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      blockCode: 'DIP-NAT',
+      questions: [
+        {
+          id: 'Q1',
+          label: 'Boursier',
+          text: 'Êtes-vous boursier ?',
+          answerType: 'O / N'
+        },
+        {
+          id: 'Q2',
+          label: 'Double nationalité',
+          text: 'Avez-vous une double nationalité ?',
+          answerType: 'O / N'
+        },
+        {
+          id: 'Q3',
+          label: 'Situation particulière',
+          text: 'Êtes-vous dans une situation particulière ?',
+          answerType: 'O / N'
+        }
+      ],
+      rules: [
+        {
+          id: 1,
+          expression: 'Q3 = oui',
+          targetType: 'Bloc',
+          target: 'SIT-PART'
+        },
+        {
+          id: 2,
+          expression: 'sinon',
+          targetType: 'Profil',
+          target: 'PROFIL_NO'
+        }
+      ]
+    };
+
+    const questionsList = document.getElementById('questionsList');
+    const rulesList = document.getElementById('rulesList');
+    const questionCount = document.getElementById('questionCount');
+    const conditionCount = document.getElementById('conditionCount');
+    const outputCount = document.getElementById('outputCount');
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderQuestions() {
+      questionCount.textContent = state.questions.length;
+      questionsList.innerHTML = state.questions.map((q, index) => `
+        <article class="question-card">
+          <div class="question-row">
+            <div class="question-main">
+              <div class="question-code">${escapeHtml(q.id)}</div>
+              <div>
+                <div class="pill">Type : ${escapeHtml(q.answerType)}</div>
+                <h3 class="question-title">${escapeHtml(q.label)}</h3>
+                <p class="question-text">${escapeHtml(q.text)}</p>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="action-btn" onclick="editQuestion(${index})" title="Modifier">✎</button>
+              <button class="action-btn" onclick="deleteQuestion(${index})" title="Supprimer">✕</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderRules() {
+      conditionCount.textContent = state.rules.length;
+      outputCount.textContent = state.rules.length;
+
+      rulesList.innerHTML = state.rules.map((rule, index) => {
+        const resultTag = rule.targetType === 'Profil'
+          ? '<span class="tag-success">Redirection profil</span>'
+          : '<span class="tag-info">Redirection bloc</span>';
+
+        return `
+          <article class="rule-card">
+            <div class="rule-top">
+              <div class="rule-tags">
+                <span class="tag-dark">Règle ${escapeHtml(rule.id)}</span>
+                ${resultTag}
+              </div>
+
+              <div class="actions">
+                <button class="action-btn" onclick="editRule(${index})" title="Modifier">✎</button>
+                <button class="action-btn" onclick="deleteRule(${index})" title="Supprimer">✕</button>
+              </div>
+            </div>
+
+            <div class="rule-grid">
+              <div class="rule-box">
+                <div class="box-label">Condition</div>
+                <div class="box-value">${escapeHtml(rule.expression)}</div>
+              </div>
+
+              <div class="arrow">→</div>
+
+              <div class="result-box">
+                <div class="box-label">Résultat</div>
+                <div class="box-value">
+                  Rediriger vers
+                  <span class="target-chip">${escapeHtml(rule.target)}</span>
+                  <span class="target-type">(${escapeHtml(rule.targetType)})</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function renderAll() {
+      renderQuestions();
+      renderRules();
+    }
+
+    function addQuestion() {
+      const id = prompt('Code de la question', `Q${state.questions.length + 1}`);
+      if (!id) return;
+
+      const label = prompt('Libellé court', 'Nouvelle question');
+      if (!label) return;
+
+      const text = prompt('Texte de la question', 'Saisissez votre question');
+      if (!text) return;
+
+      const answerType = prompt('Type de réponse', 'O / N') || 'O / N';
+
+      state.questions.push({ id, label, text, answerType });
+      renderQuestions();
+    }
+
+    function editQuestion(index) {
+      const q = state.questions[index];
+      const id = prompt('Code de la question', q.id);
+      if (!id) return;
+      const label = prompt('Libellé court', q.label);
+      if (!label) return;
+      const text = prompt('Texte de la question', q.text);
+      if (!text) return;
+      const answerType = prompt('Type de réponse', q.answerType) || q.answerType;
+
+      state.questions[index] = { id, label, text, answerType };
+      renderQuestions();
+    }
+
+    function deleteQuestion(index) {
+      const q = state.questions[index];
+      if (!confirm(`Supprimer la question ${q.id} ?`)) return;
+      state.questions.splice(index, 1);
+      renderQuestions();
+    }
+
+    function addRule() {
+      const expression = prompt('Condition', 'Q3 = oui');
+      if (!expression) return;
+
+      const targetType = prompt('Type de cible : Profil ou Bloc', 'Bloc');
+      if (!targetType) return;
+
+      const target = prompt('Code de la cible', targetType.toLowerCase() === 'profil' ? 'PROFIL_NO' : 'SIT-PART');
+      if (!target) return;
+
+      state.rules.push({
+        id: state.rules.length + 1,
+        expression,
+        targetType,
+        target
+      });
+
+      renderRules();
+    }
+
+    function editRule(index) {
+      const rule = state.rules[index];
+      const expression = prompt('Condition', rule.expression);
+      if (!expression) return;
+      const targetType = prompt('Type de cible : Profil ou Bloc', rule.targetType);
+      if (!targetType) return;
+      const target = prompt('Code de la cible', rule.target);
+      if (!target) return;
+
+      state.rules[index] = {
+        ...rule,
+        expression,
+        targetType,
+        target
+      };
+
+      renderRules();
+    }
+
+    function deleteRule(index) {
+      const rule = state.rules[index];
+      if (!confirm(`Supprimer la règle ${rule.id} ?`)) return;
+      state.rules.splice(index, 1);
+      renderRules();
+    }
+
+    document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
+    document.getElementById('addRuleBtn').addEventListener('click', addRule);
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+      alert('Action Annuler');
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      console.log('Données à sauvegarder :', JSON.stringify(state, null, 2));
+      alert('Simulation de sauvegarde. Les données sont affichées dans la console.');
+    });
+
+    function closeModal() {
+      alert('Ici tu peux fermer la modal, ou masquer le composant.');
+    }
+
+    document.getElementById('closeBtn').addEventListener('click', closeModal);
+    document.getElementById('closeModalTop').addEventListener('click', closeModal);
+
+    window.editQuestion = editQuestion;
+    window.deleteQuestion = deleteQuestion;
+    window.editRule = editRule;
+    window.deleteRule = deleteRule;
+
+    renderAll();
+  </script>
+</body>
+</html>

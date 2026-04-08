@@ -1,4 +1,5 @@
 let currentConditionSpan = null;
+let currentNodeId = null;
 
 let undoStack = [];
 let redoStack = [];
