@@ -898,3 +898,191 @@ select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
 }
+
+/* ── Undo / Redo floating controls ── */
+.history-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 50;
+}
+
+.history-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.history-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.history-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Trigger: carte de sélection du type d'action ── */
+.trigger-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.trigger-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 12px;
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--text);
+}
+
+.trigger-type-card:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.trigger-type-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.trigger-type-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ── Trigger: ligne d'action dans le modal du bloc ── */
+.trigger-action-row {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+}
+
+.trigger-action-icon {
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.trigger-action-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.trigger-action-main strong {
+    font-size: 13px;
+}
+
+.trigger-action-meta {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.trigger-action-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
+/* ── Variable pills (templates email/sms/webhook) ── */
+.variable-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.var-pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.var-pill-group-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-2);
+    margin-right: 6px;
+    min-width: 85px;
+}
+
+.var-pill {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    padding: 4px 9px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.12s ease;
+}
+
+.var-pill:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+/* ── Quill tweaks dans le modal action ── */
+#trig-email-editor {
+    background: #fff;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    min-height: 180px;
+}
+
+#trig-email-editor .ql-editor {
+    min-height: 160px;
+    font-size: 13px;
+    font-family: Inter, sans-serif;
+}
+
+.ql-toolbar.ql-snow {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border-color: var(--line) !important;
+}
+
+.ql-container.ql-snow {
+    border-color: var(--line) !important;
+}
+
+/* ── Badge trigger ── */
+.badge-trigger {
+    background: #FEF3C7;
+    color: #92400E;
+}

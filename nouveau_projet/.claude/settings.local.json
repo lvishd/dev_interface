@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(node -e \"require\\('./js/models.js'\\); console.log\\('ok'\\)\")",
+      "Bash(node --check js/pages/tunnel-editor.js)",
+      "Bash(node --check js/mock-data.js)",
+      "Bash(node --check js/core/history.js)",
+      "Bash(node --check js/models.js)"
+    ]
+  }
+}

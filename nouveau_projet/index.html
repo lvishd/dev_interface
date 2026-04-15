@@ -67,11 +67,22 @@
             <div class="modal-content" id="app-modal-2-content"></div>
         </div>
 
+        <!-- ── Undo / Redo floating buttons ── -->
+        <div class="history-controls">
+            <button id="history-undo" class="history-btn" title="Annuler (Ctrl+Z)" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6.7 3L3 13"/></svg>
+            </button>
+            <button id="history-redo" class="history-btn" title="Rétablir (Ctrl+Y)" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6.7 3L21 13"/></svg>
+            </button>
+        </div>
+
         <!-- Vendor bundle (jQuery, mermaid, svgPanZoom, Sortable) -->
         <script src="js/bundle/vendor.iife.js"></script>
 
         <!-- Scripts: core -->
         <script src="js/core/store.js"></script>
+        <script src="js/core/history.js"></script>
         <script src="js/models.js"></script>
         <script src="js/mock-data.js"></script>
         <script src="js/ui-helpers.js"></script>

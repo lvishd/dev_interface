@@ -43,6 +43,7 @@ function typeBadge(type) {
         paiement: 'Paiement',
         upload: 'Upload',
         information: 'Information',
+        trigger: 'Déclencheur',
         initial: 'Début',
         final: 'Fin',
         variable: 'Variable',

@@ -44,9 +44,13 @@ const SchemaEditorPage = {
             if (n.type === 'initial') {
                 m += `    ${n.id}(("▶ ${n.label}"))\n`;
             } else if (n.type === 'variable') {
-                m += `    ${n.id}{"🔀 ${n.label}"}\n`;
+                const v = n.variableId ? Store.findById('variables', n.variableId) : null;
+                const label = (v && v.label) || n.label || n.id;
+                m += `    ${n.id}{"🔀 ${label.replace(/"/g, '\\"')}"}\n`;
             } else if (n.type === 'formula') {
-                m += `    ${n.id}["💰 ${n.label}"]\n`;
+                const f = n.formulaId ? Store.findById('formulas', n.formulaId) : null;
+                const label = (f && f.label) || n.label || n.id;
+                m += `    ${n.id}["💰 ${label.replace(/"/g, '\\"')}"]\n`;
             }
         });
 

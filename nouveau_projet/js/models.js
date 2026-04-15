@@ -31,7 +31,42 @@ const Models = {
         if (type === 'tarif') {
             block.schemaId = '';
         }
+        if (type === 'trigger') {
+            block.actions = [];
+        }
         return block;
+    },
+
+    /* ── Trigger action (email / sms / cron / webhook / autre) ── */
+    createTriggerAction(type) {
+        const action = {
+            id: 'act_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+            type,
+            label: '',
+            timing: { mode: 'immediate', delay: 0, delayUnit: 'minutes', cron: '' },
+            config: {},
+        };
+        if (type === 'email') {
+            action.config = {
+                recipientType: 'gestionnaire',
+                customRecipient: '',
+                subject: '',
+                body: '',
+            };
+        } else if (type === 'sms') {
+            action.config = {
+                recipientType: 'etudiant',
+                customRecipient: '',
+                message: '',
+            };
+        } else if (type === 'cron') {
+            action.config = { expression: '0 8 * * *', taskLabel: '' };
+        } else if (type === 'webhook') {
+            action.config = { url: '', method: 'POST', body: '' };
+        } else {
+            action.config = { description: '' };
+        }
+        return action;
     },
 
     /* ── Transition ── */
@@ -119,7 +154,7 @@ const Models = {
     },
 
     /* ── Type helpers ── */
-    BLOCK_TYPES: ['formulaire', 'tarif', 'paiement', 'information', 'upload'],
+    BLOCK_TYPES: ['formulaire', 'tarif', 'paiement', 'information', 'upload', 'trigger'],
 
     BLOCK_ICONS: {
         initial: '▶',
@@ -129,7 +164,44 @@ const Models = {
         paiement: '💳',
         upload: '📎',
         information: 'ℹ️',
+        trigger: '⚡',
     },
+
+    /* ── Trigger helpers ── */
+    TRIGGER_ACTION_TYPES: ['email', 'sms', 'cron', 'webhook', 'autre'],
+
+    TRIGGER_ACTION_ICONS: {
+        email: '✉️',
+        sms: '💬',
+        cron: '⏰',
+        webhook: '🔗',
+        autre: '⚙️',
+    },
+
+    TRIGGER_ACTION_LABELS: {
+        email: 'Email',
+        sms: 'SMS',
+        cron: 'Tâche planifiée',
+        webhook: 'Webhook',
+        autre: 'Action personnalisée',
+    },
+
+    TRIGGER_TIMING_MODES: ['immediate', 'delayed', 'scheduled'],
+
+    TRIGGER_TIMING_LABELS: {
+        immediate: 'Immédiat',
+        delayed: 'Différé',
+        scheduled: 'Planifié (cron)',
+    },
+
+    TRIGGER_DELAY_UNITS: ['minutes', 'heures', 'jours'],
+
+    TRIGGER_RECIPIENTS: [
+        { id: 'gestionnaire', label: 'Gestionnaire (email par défaut)' },
+        { id: 'etudiant', label: 'Étudiant' },
+        { id: 'prof', label: 'Professeur' },
+        { id: 'autre', label: 'Autre (personnalisé)' },
+    ],
 
     /* Types d'étapes (à l'intérieur d'un bloc) :
        - step  : étape standard avec questions

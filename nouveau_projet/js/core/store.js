@@ -18,6 +18,7 @@ const Store = {
     },
 
     save(collection, items) {
+        if (typeof History !== 'undefined') History.record();
         this.set(collection, items);
     },
 
@@ -26,22 +27,24 @@ const Store = {
     },
 
     upsert(collection, item) {
+        if (typeof History !== 'undefined') History.record();
         const items = this.getAll(collection);
         const idx = items.findIndex(i => i.id === item.id);
         if (idx >= 0) items[idx] = item;
         else items.push(item);
-        this.save(collection, items);
+        this.set(collection, items);
     },
 
     remove(collection, id) {
+        if (typeof History !== 'undefined') History.record();
         const items = this.getAll(collection).filter(i => i.id !== id);
-        this.save(collection, items);
+        this.set(collection, items);
     },
 
     /** Initialise avec des données mock si le store est vide */
     initIfEmpty(collection, mockItems) {
         if (this.getAll(collection).length === 0) {
-            this.save(collection, mockItems);
+            this.set(collection, mockItems);
         }
     }
 };

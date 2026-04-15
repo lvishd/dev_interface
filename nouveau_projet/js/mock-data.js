@@ -259,6 +259,30 @@ const MOCK_VARIABLES = [
 // Initialisation du store
 // Force le rechargement des données mock (dev mode)
 // Passer ?reset dans l'URL pour réinitialiser les données
+/* ══════════════════════════════════════════════════════════════
+   Template variables disponibles dans les templates email / SMS.
+   Ces variables sont insérables via les pills dans l'éditeur.
+   ══════════════════════════════════════════════════════════════ */
+const MOCK_TEMPLATE_VARIABLES = [
+    { id: 'etudiant_nom',       label: 'Nom étudiant',        category: 'Étudiant' },
+    { id: 'etudiant_prenom',    label: 'Prénom étudiant',     category: 'Étudiant' },
+    { id: 'etudiant_email',     label: 'Email étudiant',      category: 'Étudiant' },
+    { id: 'etudiant_ine',       label: 'INE',                 category: 'Étudiant' },
+    { id: 'etudiant_telephone', label: 'Téléphone étudiant',  category: 'Étudiant' },
+    { id: 'formation_nom',      label: 'Nom formation',       category: 'Formation' },
+    { id: 'formation_code',     label: 'Code formation',      category: 'Formation' },
+    { id: 'profil_code',        label: 'Code profil',         category: 'Formation' },
+    { id: 'prof_nom',           label: 'Nom professeur',      category: 'Professeur' },
+    { id: 'prof_email',         label: 'Email professeur',    category: 'Professeur' },
+    { id: 'gestionnaire_email', label: 'Email gestionnaire',  category: 'Gestionnaire' },
+    { id: 'date_jour',          label: 'Date du jour',        category: 'Système' },
+    { id: 'montant_total',      label: 'Montant total',       category: 'Paiement' },
+    { id: 'reference_paiement', label: 'Référence paiement',  category: 'Paiement' },
+];
+
+window.TEMPLATE_VARIABLES = MOCK_TEMPLATE_VARIABLES;
+
+History._suspended = true;
 if (window.location.search.includes('reset')) {
     Store.save('tunnels', MOCK_TUNNELS);
     Store.save('schemas', MOCK_SCHEMAS);
@@ -273,3 +297,4 @@ if (window.location.search.includes('reset')) {
     Store.initIfEmpty('formulas', MOCK_FORMULAS);
     Store.initIfEmpty('variables', MOCK_VARIABLES);
 }
+History._suspended = false;

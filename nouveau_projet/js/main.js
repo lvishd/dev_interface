@@ -139,6 +139,23 @@ $(function () {
         theme: "default",
     });
 
+    // Undo / Redo
+    $("#history-undo").on("click", () => History.undo());
+    $("#history-redo").on("click", () => History.redo());
+    $(document).on("keydown", function (e) {
+        const tag = (e.target.tagName || "").toLowerCase();
+        const editable = tag === "input" || tag === "textarea" || e.target.isContentEditable;
+        if (editable) return;
+        if (e.ctrlKey && (e.key === "z" || e.key === "Z")) {
+            e.preventDefault();
+            History.undo();
+        } else if (e.ctrlKey && (e.key === "y" || e.key === "Y")) {
+            e.preventDefault();
+            History.redo();
+        }
+    });
+    History.updateButtons();
+
     console.log("[Studio] Mermaid initialized, starting router");
     handleRoute();
 });
