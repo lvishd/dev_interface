@@ -13,14 +13,6 @@
         <!-- Styles -->
         <link rel="stylesheet" href="style.css" />
 
-        <!-- External libs -->
-        <script
-            src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-            crossorigin="anonymous"
-        ></script>
-        <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     </head>
 
     <body>
@@ -75,6 +67,9 @@
             <div class="modal-content" id="app-modal-2-content"></div>
         </div>
 
+        <!-- Vendor bundle (jQuery, mermaid, svgPanZoom, Sortable) -->
+        <script src="js/bundle/vendor.iife.js"></script>
+
         <!-- Scripts: core -->
         <script src="js/core/store.js"></script>
         <script src="js/models.js"></script>
@@ -90,7 +85,7 @@
         <script src="js/pages/formulas.js"></script>
         <script src="js/pages/variables.js"></script>
 
-        <!-- Module entry point (imports mermaid) -->
-        <script type="module" src="js/main.js"></script>
+        <!-- App entry point -->
+        <script src="js/main.js"></script>
     </body>
 </html>

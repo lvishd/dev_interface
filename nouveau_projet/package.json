@@ -1,0 +1,28 @@
+{
+  "name": "nouveau_projet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@mermaid-js/layout-elk": "^0.2.1",
+    "jquery": "^3.7.1",
+    "mermaid": "^11.14.0",
+    "sortablejs": "^1.15.6",
+    "svg-pan-zoom": "^3.6.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.8"
+  }
+}

@@ -1,9 +1,8 @@
 /* ══════════════════════════════════════════════════════════════
-   Main — Entry point (ES module)
-   Imports mermaid, creates graph engine, initializes SPA router
+   Main — Entry point
+   Uses global vendor libs (jQuery, mermaid, svgPanZoom, Sortable)
+   loaded from js/bundle/vendor.iife.js
    ══════════════════════════════════════════════════════════════ */
-import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.14.0/dist/mermaid.esm.min.mjs";
-import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.1/dist/mermaid-layout-elk.esm.min.mjs";
 
 /* ── Graph Engine (exposed globally) ── */
 window.graphEngine = {
@@ -132,7 +131,7 @@ window.addEventListener("hashchange", handleRoute);
 
 /* ── Init on DOM ready ── */
 $(function () {
-    mermaid.registerLayoutLoaders(elkLayouts);
+    mermaid.registerLayoutLoaders(window.elkLayouts);
 
     mermaid.initialize({
         startOnLoad: false,
