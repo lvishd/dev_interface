@@ -39,16 +39,17 @@ const MOCK_TUNNELS = [
             { id: 'tarification', label: 'Tarification', type: 'tarif',
                 steps: [
                     { id: 'DEBUT_ETAPES', label: 'DEBUT', type: 'initial' },
-                    { id: 'etape_bourse', label: 'Bourse', type: 'tarif', title: 'Situation boursière', intro: 'Informations sur votre bourse.', questions: [
-                        { id: 'Q_BOURSIER', questionNb: 'Q10', title: 'Boursier ?', body: 'Êtes-vous boursier ?', type: 'bool', resValues: ['Oui', 'Non'], order: 1 },
-                    ], helpTexts: ['Munissez-vous de votre notification de bourse.'] },
+                    { id: 'Q_TARIF_DN', label: 'Q_TARIF_DN', type: 'tarif', title: 'QUESTIONNAIRE TARIF : Q_TARIF_DN', intro: 'Questionnaire tarifaire pour déterminer la formule applicable.', questions: [
+                        { id: 'Q1_PROFIL', questionNb: 'Q1', title: 'Profil', body: 'Quel est votre profil ?', type: 'select', resValues: ['Exo', 'Auditeur', 'Autre'], order: 1 },
+                        { id: 'Q2_CESURE', questionNb: 'Q2', title: 'Cesure', body: 'Êtes-vous en situation de césure ?', type: 'bool', resValues: ['Oui', 'Non'], order: 2 },
+                        { id: 'Q3_TRANSFERT', questionNb: 'Q3', title: 'Transfert', body: 'Transfert de dossier ?', type: 'bool', resValues: ['Oui', 'Non'], order: 3 },
+                        { id: 'Q4_CRIO', questionNb: 'Q4', title: 'CRIO', body: 'Contribution CRIO acquittée ?', type: 'bool', resValues: ['Oui', 'Non'], order: 4 },
+                    ], helpTexts: [] },
                     { id: 'FIN_ETAPES', label: 'FIN', type: 'final' },
                 ],
                 stepTransitions: [
-                    { source: 'DEBUT_ETAPES', target: 'etape_bourse', condition: '', order: 1 },
-                    { source: 'etape_bourse', target: 'etape_nationalite', condition: 'Q_BOURSIER=Non', order: 2 },
-                    { source: 'etape_bourse', target: 'FIN_ETAPES', condition: 'Q_BOURSIER=Oui', order: 3 },
-                    { source: 'etape_nationalite', target: 'FIN_ETAPES', condition: '', order: 4 },
+                    { source: 'DEBUT_ETAPES', target: 'Q_TARIF_DN', condition: '', order: 1 },
+                    { source: 'Q_TARIF_DN', target: 'FIN_ETAPES', condition: '', order: 2 },
                 ],
                 schemaId: 'SCH_DN' },
             { id: 'documents', label: 'Upload documents', type: 'upload' },
