@@ -161,14 +161,39 @@ const TunnelEditorPage = {
                     📋 Ouvrir l'éditeur d'étapes (${(block.steps || []).length} étapes)
                 </button>` : ''}
 
-                ${isTarif ? `
+                ${isTarif ? (() => {
+                    const tarifSteps = (block.steps || []).filter(s => s.type === 'tarif');
+                    const standardSteps = (block.steps || []).filter(s => s.type === 'step');
+                    return `
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3 class="panel-title">Étapes tarif liées</h3>
+                            <p class="panel-subtitle">${tarifSteps.length} étape${tarifSteps.length > 1 ? 's' : ''} tarif · ${standardSteps.length} étape${standardSteps.length > 1 ? 's' : ''} standard</p>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        ${tarifSteps.length > 0
+                            ? tarifSteps.map(s => `
+                                <div class="list-row" style="display:flex;align-items:center;gap:10px;">
+                                    <span>💰</span>
+                                    <strong style="font-size:13px;">${escHtml(s.id)}</strong>
+                                    <span style="font-size:13px;color:var(--muted);">${escHtml(s.label)}</span>
+                                    <span style="margin-left:auto;font-size:12px;color:var(--muted-2);">${(s.questions || []).length} question${(s.questions || []).length > 1 ? 's' : ''}</span>
+                                </div>
+                            `).join('')
+                            : '<p style="color:var(--muted);font-size:13px;margin:0;">Aucune étape de type tarif — ouvre l\'éditeur d\'étapes pour en ajouter.</p>'}
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Schéma de calcul associé</label>
                     <select id="block-schema-select">
                         <option value="">— Aucun —</option>
                         ${Store.getAll('schemas').map(s => `<option value="${s.id}" ${s.id === block.schemaId ? 'selected' : ''}>${s.id} — ${escHtml(s.label)}</option>`).join('')}
                     </select>
-                </div>` : ''}
+                    <span class="form-hint">Les étapes tarif alimentent ce schéma via les variables de type « réponse étudiant ».</span>
+                </div>`;
+                })() : ''}
 
                 <div class="panel">
                     <div class="panel-header">

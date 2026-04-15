@@ -131,6 +131,18 @@ const Models = {
         information: 'ℹ️',
     },
 
+    /* Types d'étapes (à l'intérieur d'un bloc) :
+       - step  : étape standard avec questions
+       - tarif : étape de tarification (traitement spécial, dans un bloc tarif uniquement) */
+    STEP_TYPES: ['step', 'tarif'],
+
+    STEP_ICONS: {
+        initial: '▶',
+        final: '■',
+        step: '📝',
+        tarif: '💰',
+    },
+
     VARIABLE_SOURCES: ['produit', 'dossier', 'reponse_etudiant', 'globale'],
 
     VARIABLE_TYPES: ['text', 'number', 'bool', 'select'],

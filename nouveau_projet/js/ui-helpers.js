@@ -3,14 +3,16 @@
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Modal management ── */
-function openModal(contentHtml) {
-    $('#app-modal-content').html(contentHtml);
+function openModal(contentHtml, opts) {
+    const $c = $('#app-modal-content');
+    $c.html(contentHtml);
+    $c.toggleClass('wide', !!(opts && opts.wide));
     $('#app-modal').removeClass('hidden');
 }
 
 function closeModal() {
     $('#app-modal').addClass('hidden');
-    $('#app-modal-content').html('');
+    $('#app-modal-content').removeClass('wide').html('');
 }
 
 function openModal2(contentHtml) {
@@ -45,6 +47,7 @@ function typeBadge(type) {
         final: 'Fin',
         variable: 'Variable',
         formula: 'Formule',
+        step: 'Étape',
     };
     return `<span class="badge badge-${type}">${labels[type] || type}</span>`;
 }

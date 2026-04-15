@@ -39,12 +39,9 @@ const MOCK_TUNNELS = [
             { id: 'tarification', label: 'Tarification', type: 'tarif',
                 steps: [
                     { id: 'DEBUT_ETAPES', label: 'DEBUT', type: 'initial' },
-                    { id: 'etape_bourse', label: 'Bourse', type: 'step', title: 'Situation boursière', intro: 'Informations sur votre bourse.', questions: [
+                    { id: 'etape_bourse', label: 'Bourse', type: 'tarif', title: 'Situation boursière', intro: 'Informations sur votre bourse.', questions: [
                         { id: 'Q_BOURSIER', questionNb: 'Q10', title: 'Boursier ?', body: 'Êtes-vous boursier ?', type: 'bool', resValues: ['Oui', 'Non'], order: 1 },
                     ], helpTexts: ['Munissez-vous de votre notification de bourse.'] },
-                    { id: 'etape_nationalite', label: 'Nationalité', type: 'step', title: 'Nationalité', intro: 'Votre nationalité.', questions: [
-                        { id: 'Q_NATIONALITE_UE', questionNb: 'Q11', title: 'Nationalité UE ?', body: 'Avez-vous la nationalité d\'un pays de l\'UE ?', type: 'bool', resValues: ['Oui', 'Non'], order: 1 },
-                    ], helpTexts: [] },
                     { id: 'FIN_ETAPES', label: 'FIN', type: 'final' },
                 ],
                 stepTransitions: [

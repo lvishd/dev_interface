@@ -60,7 +60,8 @@ const StepEditorPage = {
         let m = '---\nconfig:\n    layout: elk\n---\ngraph TD\n';
         m += '    classDef initial fill:#bfe2ef,stroke:#6accee,color:#1a6d8a;\n';
         m += '    classDef final fill:#c4eac6,stroke:#65ae6a,color:#2d5e30;\n';
-        m += '    classDef step fill:#E0EAFF,stroke:#3B5BDB,color:#2b3d91;\n\n';
+        m += '    classDef step fill:#E0EAFF,stroke:#3B5BDB,color:#2b3d91;\n';
+        m += '    classDef tarif fill:#FFF3E0,stroke:#E8590C,color:#a13d06;\n\n';
 
         block.steps.forEach(s => {
             if (s.type === 'initial') {
@@ -68,9 +69,10 @@ const StepEditorPage = {
             } else if (s.type === 'final') {
                 m += `    ${s.id}["■ ${s.label}"]\n`;
             } else {
+                const icon = s.type === 'tarif' ? '💰' : '📝';
                 const qCount = (s.questions || []).length;
                 const qInfo = qCount > 0 ? `<br/>${qCount} question${qCount > 1 ? 's' : ''}` : '';
-                m += `    ${s.id}["📝 ${s.label}${qInfo}"]\n`;
+                m += `    ${s.id}["${icon} ${s.label}${qInfo}"]\n`;
             }
         });
 
@@ -86,7 +88,8 @@ const StepEditorPage = {
 
         m += '\n';
         block.steps.forEach(s => {
-            const cls = s.type === 'step' ? 'step' : s.type;
+            // step et tarif ont leur propre classDef ; initial/final restent inchangés
+            const cls = (s.type === 'step' || s.type === 'tarif') ? s.type : s.type;
             m += `    class ${s.id} ${cls}\n`;
         });
 
@@ -170,6 +173,8 @@ const StepEditorPage = {
             `).join('')
             : '<p style="color:var(--muted);font-size:13px;margin:0;">Aucune question</p>';
 
+        const currentHelpText = (helpTexts && helpTexts.length > 0) ? helpTexts[0] : '';
+
         openModal(`
             <button class="close-modal" onclick="closeModal()">×</button>
             <div class="modal-header">
@@ -180,7 +185,7 @@ const StepEditorPage = {
                     </div>
                 </div>
             </div>
-            <div class="modal-body" style="display:flex;flex-direction:column;gap:18px;max-height:60vh;overflow-y:auto;">
+            <div class="modal-body" style="display:flex;flex-direction:column;gap:18px;">
                 ${!isSpecial ? `
                 <div class="form-row">
                     <div class="form-group">
@@ -192,44 +197,53 @@ const StepEditorPage = {
                         <input type="text" id="step-title-input" value="${escHtml(step.title || '')}" />
                     </div>
                 </div>
+                ${block.type === 'tarif' ? `
                 <div class="form-group">
-                    <label>Texte d'introduction</label>
-                    <textarea id="step-intro-input" rows="2">${escHtml(step.intro || '')}</textarea>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3 class="panel-title">Questions</h3>
-                            <p class="panel-subtitle">${questions.length} question${questions.length > 1 ? 's' : ''}</p>
-                        </div>
-                        <button class="btn btn-sm btn-light" id="step-add-q-btn">+ Ajouter</button>
+                    <label>Type d'étape</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="step-type-input" value="step" ${step.type === 'step' ? 'checked' : ''} /><span>📝 Étape standard</span></label>
+                        <label><input type="radio" name="step-type-input" value="tarif" ${step.type === 'tarif' ? 'checked' : ''} /><span>💰 Étape tarif (traitement spécial)</span></label>
                     </div>
-                    <div class="panel-body" id="step-questions-list">
-                        ${questionsHtml}
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3 class="panel-title">Textes d'aide</h3>
-                            <p class="panel-subtitle">${helpTexts.length} texte${helpTexts.length > 1 ? 's' : ''}</p>
-                        </div>
-                        <button class="btn btn-sm btn-light" id="step-add-help-btn">+ Ajouter</button>
-                    </div>
-                    <div class="panel-body" id="step-help-list">
-                        ${helpTexts.length > 0
-                            ? helpTexts.map((h, i) => `
-                                <div class="list-row" style="display:flex;align-items:center;gap:10px;" data-hidx="${i}">
-                                    <span style="flex:1;font-size:13px;">${escHtml(h)}</span>
-                                    <button class="action-btn danger step-del-help-btn" data-hidx="${i}" title="Supprimer">✕</button>
-                                </div>
-                            `).join('')
-                            : '<p style="color:var(--muted);font-size:13px;margin:0;">Aucun texte d\'aide</p>'}
-                    </div>
+                    <span class="form-hint">Les étapes tarif sont liées au schéma de calcul du bloc.</span>
                 </div>` : ''}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Texte d'introduction</label>
+                        <textarea id="step-intro-input" rows="2">${escHtml(step.intro || '')}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Texte d'aide</label>
+                        <textarea id="step-help-input" rows="2" placeholder="Indication affichée pour guider l'étudiant…">${escHtml(currentHelpText)}</textarea>
+                    </div>
+                </div>
 
+                <div class="two-col">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3 class="panel-title">Questions</h3>
+                                <p class="panel-subtitle">${questions.length} question${questions.length > 1 ? 's' : ''}</p>
+                            </div>
+                            <button class="btn btn-sm btn-light" id="step-add-q-btn">+ Ajouter</button>
+                        </div>
+                        <div class="panel-body" id="step-questions-list">
+                            ${questionsHtml}
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3 class="panel-title">Transitions sortantes</h3>
+                                <p class="panel-subtitle">${outTransitions.length} transition${outTransitions.length > 1 ? 's' : ''}</p>
+                            </div>
+                            <button class="btn btn-sm btn-light" id="step-add-trans-btn">+ Ajouter</button>
+                        </div>
+                        <div class="panel-body" id="step-transitions-list">
+                            ${transHtml}
+                        </div>
+                    </div>
+                </div>` : `
                 <div class="panel">
                     <div class="panel-header">
                         <div>
@@ -241,7 +255,7 @@ const StepEditorPage = {
                     <div class="panel-body" id="step-transitions-list">
                         ${transHtml}
                     </div>
-                </div>
+                </div>`}
             </div>
             <div class="modal-footer">
                 <div class="modal-footer-left">
@@ -250,13 +264,13 @@ const StepEditorPage = {
                 <button class="btn btn-light" onclick="closeModal()">Annuler</button>
                 <button class="btn btn-primary" id="step-save-btn">Enregistrer</button>
             </div>
-        `);
+        `, { wide: true });
 
         // ── Bind ──
-        this._bindStepModalEvents(step, outTransitions, possibleTargets, questions, helpTexts);
+        this._bindStepModalEvents(step, outTransitions, possibleTargets, questions);
     },
 
-    _bindStepModalEvents(step, outTransitions, possibleTargets, questions, helpTexts) {
+    _bindStepModalEvents(step, outTransitions, possibleTargets, questions) {
         const self = this;
         const block = this._block;
         const isSpecial = step.type === 'initial' || step.type === 'final';
@@ -267,6 +281,12 @@ const StepEditorPage = {
                 step.label = $('#step-label-input').val().trim() || step.id;
                 step.title = $('#step-title-input').val().trim();
                 step.intro = $('#step-intro-input').val().trim();
+                if (block.type === 'tarif') {
+                    const newType = $('input[name="step-type-input"]:checked').val();
+                    if (newType === 'step' || newType === 'tarif') step.type = newType;
+                }
+                const helpVal = $('#step-help-input').val().trim();
+                step.helpTexts = helpVal ? [helpVal] : [];
             }
             // Update transition targets
             $('#step-transitions-list .step-select-target').each(function () {
@@ -336,19 +356,6 @@ const StepEditorPage = {
             self._openStepModal(step);
         });
 
-        // ── Help texts ──
-        $('#step-add-help-btn').on('click', () => {
-            self._openHelpTextModal(step, null, helpTexts.length);
-        });
-
-        $(document).off('click.stepdelhelp').on('click.stepdelhelp', '.step-del-help-btn', function () {
-            const idx = parseInt($(this).data('hidx'));
-            helpTexts.splice(idx, 1);
-            step.helpTexts = helpTexts;
-            closeModal();
-            self._save();
-            self._openStepModal(step);
-        });
     },
 
     /* ════════════════════════════════════════
@@ -510,12 +517,13 @@ const StepEditorPage = {
        ════════════════════════════════════════ */
     _openAddStepModal() {
         const self = this;
+        const blockIsTarif = self._block.type === 'tarif';
 
         openModal(`
             <button class="close-modal" onclick="closeModal()">×</button>
             <div class="modal-header">
                 <h2 class="modal-title">Ajouter une étape</h2>
-                <p class="modal-subtitle">Nouvelle étape de questions dans le bloc « ${escHtml(self._block.label)} »</p>
+                <p class="modal-subtitle">Nouvelle étape dans le bloc « ${escHtml(self._block.label)} »</p>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -526,6 +534,15 @@ const StepEditorPage = {
                     <label>Label</label>
                     <input type="text" id="new-step-label" placeholder="Nom affiché" />
                 </div>
+                ${blockIsTarif ? `
+                <div class="form-group">
+                    <label>Type d'étape</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="new-step-type" value="step" checked /><span>📝 Étape standard (questions)</span></label>
+                        <label><input type="radio" name="new-step-type" value="tarif" /><span>💰 Étape tarif (traitement spécial)</span></label>
+                    </div>
+                    <span class="form-hint">Les étapes tarif alimentent le schéma de calcul associé au bloc.</span>
+                </div>` : ''}
                 <div class="form-group">
                     <label>Titre</label>
                     <input type="text" id="new-step-title" placeholder="Titre de l'étape" />
@@ -550,10 +567,12 @@ const StepEditorPage = {
                 return;
             }
 
+            const stepType = blockIsTarif ? ($('input[name="new-step-type"]:checked').val() || 'step') : 'step';
+
             const newStep = {
                 id,
                 label: label || id,
-                type: 'step',
+                type: stepType,
                 title: $('#new-step-title').val().trim(),
                 intro: $('#new-step-intro').val().trim(),
                 questions: [],
