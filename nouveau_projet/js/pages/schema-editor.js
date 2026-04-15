@@ -81,87 +81,7 @@ const SchemaEditorPage = {
     },
 
     _exportPng() {
-        const svgEl = document.querySelector('#schema-mermaid-preview svg');
-        if (!svgEl) { alert('Aucun diagramme à exporter.'); return; }
-
-        // Mesurer la bbox réelle du contenu (insensible aux transforms svgPanZoom)
-        const liveViewport = svgEl.querySelector('.svg-pan-zoom_viewport') || svgEl;
-        const bbox = liveViewport.getBBox();
-        const padding = 20;
-        const w = bbox.width  + padding * 2;
-        const h = bbox.height + padding * 2;
-        console.log('[Export] bbox:', bbox, '→', w, 'x', h);
-
-        // Clone — on règle viewBox et dimensions sur le contenu réel
-        const clone = svgEl.cloneNode(true);
-        clone.setAttribute('width',  w);
-        clone.setAttribute('height', h);
-        clone.setAttribute('viewBox', `${bbox.x - padding} ${bbox.y - padding} ${w} ${h}`);
-        clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-
-        // Retire les @import / @font-face externes (sinon canvas tainted)
-        clone.querySelectorAll('style').forEach(s => {
-            s.textContent = s.textContent
-                .replace(/@import\s+[^;]+;/g, '')
-                .replace(/@font-face\s*\{[^}]*\}/gs, '');
-        });
-
-        // Retirer les contrôles UI de svgPanZoom (+ / RESET / -)
-        clone.querySelectorAll('#svg-pan-zoom-controls, .svg-pan-zoom-control').forEach(el => el.remove());
-
-        // Neutraliser le transform de pan/zoom pour partir d'un état "fit"
-        const cloneViewport = clone.querySelector('.svg-pan-zoom_viewport');
-        if (cloneViewport) {
-            cloneViewport.removeAttribute('transform');
-            cloneViewport.removeAttribute('style');
-        }
-
-        const svgStr  = new XMLSerializer().serializeToString(clone);
-        const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
-        console.log('[Export] dataUrl length:', dataUrl.length, '— src assigné');
-
-        const scale  = 2;
-        const canvas = document.createElement('canvas');
-        canvas.width  = Math.round(w * scale);
-        canvas.height = Math.round(h * scale);
-        const ctx = canvas.getContext('2d');
-
-        const schemaId = this._schema.id;
-        const img = new Image();
-
-        img.onload = () => {
-            console.log('[Export] img.onload déclenché');
-            try {
-                ctx.scale(scale, scale);
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, w, h);
-                ctx.drawImage(img, 0, 0, w, h);
-
-                // toBlob() : plus robuste que toDataURL() pour les grandes images
-                canvas.toBlob(blob => {
-                    if (!blob) { alert('Échec génération PNG (blob null).'); return; }
-                    const blobUrl = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.download = `schema-${schemaId}.png`;
-                    a.href = blobUrl;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
-                    console.log('[Export] téléchargement déclenché');
-                }, 'image/png');
-            } catch (e) {
-                console.error('[Export] erreur canvas:', e);
-                alert('Erreur export PNG : ' + e.message);
-            }
-        };
-
-        img.onerror = (e) => {
-            console.error('[Export] img.onerror :', e);
-            alert('Échec chargement SVG pour export.');
-        };
-
-        img.src = dataUrl;
+        exportMermaidPng('#schema-mermaid-preview', `schema-${this._schema.id}`);
     },
 
     _save() {
@@ -171,12 +91,8 @@ const SchemaEditorPage = {
 
     _bindEvents() {
         const self = this;
-        console.log('[SchemaEditor] _bindEvents, export btn exists:', $('#export-schema-png-btn').length);
         $('#back-to-schemas').off('click').on('click', () => navigate('#schemas'));
-        $('#export-schema-png-btn').off('click').on('click', () => {
-            console.log('[SchemaEditor] export-schema-png-btn clicked');
-            self._exportPng();
-        });
+        $('#export-schema-png-btn').off('click').on('click', () => self._exportPng());
         $('#add-schema-node-btn').off('click').on('click', () => self._openAddNodeModal());
     },
 

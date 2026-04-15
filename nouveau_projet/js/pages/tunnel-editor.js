@@ -20,6 +20,7 @@ const TunnelEditorPage = {
                     </div>
                 </div>
                 <div class="page-toolbar-right">
+                    <button class="btn btn-sm btn-light" id="export-tunnel-png-btn" title="Exporter le diagramme en PNG">↓ Exporter PNG</button>
                     <button class="btn btn-sm btn-light" id="add-block-btn">+ Ajouter un bloc</button>
                 </div>
             </div>
@@ -98,6 +99,10 @@ const TunnelEditorPage = {
         const self = this;
 
         $('#back-to-tunnels').off('click').on('click', () => navigate('#tunnels'));
+
+        $('#export-tunnel-png-btn').off('click').on('click', () => {
+            exportMermaidPng('#mermaid-preview', `tunnel-${self._tunnel.id}`);
+        });
 
         $('#add-block-btn').off('click').on('click', () => self._openAddBlockModal());
     },

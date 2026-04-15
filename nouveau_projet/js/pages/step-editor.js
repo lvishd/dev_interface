@@ -39,6 +39,7 @@ const StepEditorPage = {
                     </div>
                 </div>
                 <div class="page-toolbar-right">
+                    <button class="btn btn-sm btn-light" id="export-step-png-btn" title="Exporter le diagramme en PNG">↓ Exporter PNG</button>
                     <button class="btn btn-sm btn-light" id="add-step-btn">+ Ajouter une étape</button>
                 </div>
             </div>
@@ -113,6 +114,9 @@ const StepEditorPage = {
     _bindEvents() {
         const self = this;
         $('#back-to-tunnel').off('click').on('click', () => navigate('#tunnel-editor/' + self._tunnel.id));
+        $('#export-step-png-btn').off('click').on('click', () => {
+            exportMermaidPng('#steps-mermaid-preview', `steps-${self._tunnel.id}-${self._block.id}`);
+        });
         $('#add-step-btn').off('click').on('click', () => self._openAddStepModal());
     },
 
